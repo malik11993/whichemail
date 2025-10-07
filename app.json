@@ -1,43 +1,60 @@
 {
   "expo": {
     "name": "WhichEmail",
-    "slug": "react_native_with_tailwind_setup",
+    "slug": "whichemail",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/whichemail.png",
+    "icon": "./assets/images/logo_v2.png",
     "scheme": "whichemail",
     "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/images/logo_v2.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#3b82f6"
+    },
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fanyicharllson.whichemail",
+      "backgroundColor": "#3b82f6"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/whichemail.png"
+        "backgroundColor": "#3b82f6",
+        "foregroundImage": "./assets/images/logo_v2.png"
       },
+      "package": "com.fanyicharllson.whichemail",
+      "backgroundColor": "#3b82f6",
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/whichemail.png"
+      "favicon": "./assets/images/logo_v2.png",
+      "backgroundColor": "#3b82f6"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/whichemail.png",
+          "image": "./assets/images/logo_v2.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#E6F4FE",
+          "backgroundColor": "#3b82f6",
           "dark": {
-            "backgroundColor": "#001E3C"
+            "image": "./assets/images/logo_v2.png",
+            "backgroundColor": "#1e40af"
           }
         }
       ],
-      "expo-secure-store"
+      "expo-secure-store",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow WhichEmail to use Face ID for secure password access"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
