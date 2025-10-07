@@ -15,21 +15,7 @@ export default function RootLayout() {
                 <Stack.Screen name="welcome"/>
                 <Stack.Screen name="(auth)"/>
                 <Stack.Screen name="(tabs)"/>
-                <Stack.Screen
-                    name="service/add"
-                    options={{
-                        title: 'Add Service',
-                        presentation: 'modal',
-                        headerShown: true,
-                    }}
-                />
-                <Stack.Screen
-                    name="service/[id]"
-                    options={{
-                        title: 'Service Details',
-                        headerShown: true,
-                    }}
-                />
+                <Stack.Screen name="service" />
             </Stack>
             {/*Toast config */}
             <Toast config={toastConfig}/>

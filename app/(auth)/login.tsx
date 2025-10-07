@@ -66,7 +66,7 @@ export default function Login() {
 
             // Navigate to tabs after successful login
             setTimeout(() => {
-                router.replace('/(tabs)/services');
+                router.replace('/(tabs)');
             }, 500);
         } catch (error) {
             console.error('Login error:', error);

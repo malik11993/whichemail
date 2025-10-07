@@ -86,7 +86,7 @@ export default function Register() {
             );
 
             // Navigate to tabs after successful registration
-            router.replace('/(tabs)/services');
+            router.replace('/(tabs)');
         } catch (error) {
             console.error('Registration error:', error);
             showToast.error(
@@ -216,7 +216,7 @@ export default function Register() {
                 </View>
 
                 {/* Footer */}
-                <View className="px-6 pb-8">
+                <View className="px-6 pb-8 mb-4">
                     <View className="flex-row items-center justify-center">
                         <Text className="text-gray-600">Already have an account? </Text>
                         <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
