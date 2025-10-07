@@ -3,7 +3,7 @@ import React from 'react'
 
 const Services = () => {
     return (
-        <View>
+        <View className="bg-blue-500">
             <Text className="flex-1 items-center justify-center text-blue-500">Services</Text>
         </View>
     )
