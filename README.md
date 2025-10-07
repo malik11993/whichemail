@@ -1,50 +1,52 @@
-# Welcome to your Expo app 👋
+# WhichEmail
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+WhichEmail helps you track which email address you used to sign up for websites and apps. Stop the "forgot password" cycle!
 
-## Get started
+## Overview
+Have you ever tried to log in and wondered: “Did I use my work email or my personal one?” WhichEmail lets you quickly record and search the email you used for each service so you never guess again.
 
+## Features
+- Track which email you used for each website/app
+- Quick search across saved services
+- Clean, modern UI built with NativeWind (Tailwind CSS for React Native)
+- Secure by design: planned support for optional password storage with biometrics
+
+## Tech Stack
+- Expo + React Native
+- Expo Router (file-based navigation)
+- NativeWind (Tailwind CSS)
+- React Query
+- AsyncStorage (with Appwrite planned for auth and sync)
+
+## Getting Started
 1. Install dependencies
-
    ```bash
    npm install
    ```
-
-2. Start the app
-
+2. Start the app (choose device/simulator or Expo Go)
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+The entry uses Expo Router. Initial navigation shows a Welcome screen on first launch, then routes to Auth or Tabs (Services/Settings).
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Project Structure
+- `app/` — screens and routes (Expo Router)
+  - `welcome.tsx` — onboarding screen
+  - `(auth)/` — authentication routes (login/register)
+  - `(tabs)/` — main app tabs (services, settings)
+- `components/` — shared UI components
+- `assets/` — images and icons
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## Development Notes
+- Tailwind/NativeWind is configured via `tailwind.config.js` and `babel.config.js`.
+- Web builds import `app/globals.css` for Tailwind utilities.
+- If styles don’t show after changes, clear cache: `npx expo start -c`.
 
-## Get a fresh project
+## Roadmap
+- Appwrite integration for auth and cloud sync
+- Biometric protection for sensitive fields
+- Service import/export
 
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## License
+MIT
