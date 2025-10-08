@@ -135,8 +135,7 @@ export default function ServiceDetail() {
 
     const handleEdit = () => {
         if (!service?.id) return;
-        // TODO: Navigate to edit screen when implemented
-        showToast.info('Edit Feature', 'Coming soon!');
+        router.push(`/service/edit/${service.id}`);
     };
 
     const handleDelete = () => {

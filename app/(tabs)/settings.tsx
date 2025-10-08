@@ -139,7 +139,7 @@ export default function Settings() {
                     <View className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-6 shadow-sm">
                         <View className="flex-row items-center">
                             <View className="bg-white/20 rounded-full w-16 h-16 items-center justify-center mr-4">
-                                <Ionicons name="person" size={32} color="white" />
+                                <Ionicons name="person" size={32} color="gray" />
                             </View>
                             <View className="flex-1">
                                 <Text className="text-blue-500 font-bold text-xl mb-1">
