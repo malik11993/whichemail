@@ -1,7 +1,6 @@
 import {Text, TouchableOpacity, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {router} from 'expo-router';
-import {Service} from '@/services/queries/serviceQueries';
 import {getCategoryById} from '@/constants/categories';
 
 interface ServiceCardProps {

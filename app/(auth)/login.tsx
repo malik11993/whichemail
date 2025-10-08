@@ -1,29 +1,23 @@
-import {
-    View,
-    Text,
-    ScrollView,
-    TouchableOpacity,
-    KeyboardAvoidingView,
-    Platform,
-} from 'react-native';
-import { useState } from 'react';
-import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { StatusBar } from 'expo-status-bar';
+import {KeyboardAvoidingView, Platform, ScrollView, Text, TouchableOpacity, View,} from 'react-native';
+import {useState} from 'react';
+import {router} from 'expo-router';
+import {Ionicons} from '@expo/vector-icons';
+import {StatusBar} from 'expo-status-bar';
 import Input from "@/components/forms/Input";
 import Button from "@/components/common/Button";
 import {showToast} from "@/utils/toast";
+import {useLogin} from "@/services/hooks/useAuth";
 
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [errors, setErrors] = useState({ email: '', password: '' });
+    const [errors, setErrors] = useState({email: '', password: ''});
+    const {mutate: loginUser, isPending} = useLogin();
 
     const validateForm = () => {
         let valid = true;
-        const newErrors = { email: '', password: '' };
+        const newErrors = {email: '', password: ''};
 
         // Email validation
         if (!email) {
@@ -50,32 +44,19 @@ export default function Login() {
     const handleLogin = async () => {
         if (!validateForm()) return;
 
-        setLoading(true);
         try {
-            // TODO: Implement Appwrite login
-            console.log('Login:', { email, password });
-
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 2000));
-
-            // Show success toast
-            showToast.success(
-                'Welcome back!',
-                'You have successfully logged in'
-            );
-
-            // Navigate to tabs after successful login
-            setTimeout(() => {
-                router.replace('/(tabs)');
-            }, 500);
+            loginUser(
+                {email, password},
+                {
+                    onSuccess: () => router.replace('/(tabs)'),
+                }
+            )
         } catch (error) {
             console.error('Login error:', error);
             showToast.error(
                 'Login Failed',
                 'Invalid email or password. Please try again.'
             );
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -84,9 +65,9 @@ export default function Login() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             className="flex-1 bg-white"
         >
-            <StatusBar style="dark" />
+            <StatusBar style="dark"/>
             <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
+                contentContainerStyle={{flexGrow: 1}}
                 keyboardShouldPersistTaps="handled"
             >
                 {/* Header */}
@@ -95,7 +76,7 @@ export default function Login() {
                         onPress={() => router.back()}
                         className="w-10 h-10 items-center justify-center bg-gray-100 rounded-full mb-6"
                     >
-                        <Ionicons name="arrow-back" size={24} color="#374151" />
+                        <Ionicons name="arrow-back" size={24} color="#374151"/>
                     </TouchableOpacity>
 
                     <View className="mb-2">
@@ -115,7 +96,7 @@ export default function Login() {
                         value={email}
                         onChangeText={(text) => {
                             setEmail(text);
-                            setErrors({ ...errors, email: '' });
+                            setErrors({...errors, email: ''});
                         }}
                         placeholder="example@email.com"
                         icon="mail"
@@ -128,7 +109,7 @@ export default function Login() {
                         value={password}
                         onChangeText={(text) => {
                             setPassword(text);
-                            setErrors({ ...errors, password: '' });
+                            setErrors({...errors, password: ''});
                         }}
                         placeholder="Enter your password"
                         icon="lock-closed"
@@ -145,19 +126,20 @@ export default function Login() {
                     <Button
                         title="Sign In"
                         onPress={handleLogin}
-                        loading={loading}
+                        loading={isPending}
                     />
 
                     {/* Divider */}
                     <View className="flex-row items-center my-6">
-                        <View className="flex-1 h-px bg-gray-300" />
+                        <View className="flex-1 h-px bg-gray-300"/>
                         <Text className="mx-4 text-gray-500">or</Text>
-                        <View className="flex-1 h-px bg-gray-300" />
+                        <View className="flex-1 h-px bg-gray-300"/>
                     </View>
 
                     {/* Social Login (Optional for future) */}
-                    <TouchableOpacity className="flex-row items-center justify-center bg-white border-2 border-gray-200 rounded-xl py-4 mb-6">
-                        <Ionicons name="logo-google" size={20} color="#4285F4" />
+                    <TouchableOpacity
+                        className="flex-row items-center justify-center bg-white border-2 border-gray-200 rounded-xl py-4 mb-6">
+                        <Ionicons name="logo-google" size={20} color="#4285F4"/>
                         <Text className="ml-2 font-semibold text-gray-700">
                             Continue with Google
                         </Text>

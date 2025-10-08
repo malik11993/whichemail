@@ -1,68 +1,90 @@
-import {
-    View,
-    Text,
-    ScrollView,
-    TouchableOpacity,
-    RefreshControl,
-} from 'react-native';
-import { useState } from 'react';
-import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { StatusBar } from 'expo-status-bar';
+import {RefreshControl, ScrollView, Text, TouchableOpacity, View,} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {router} from 'expo-router';
+import {Ionicons} from '@expo/vector-icons';
+import {StatusBar} from 'expo-status-bar';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import SearchBar from '@/components/common/SearchBar';
 import StatCard from '@/components/cards/StatCard';
-import ServiceCard from "@/components/cards/ServiceCard";
-import EmptyState from "@/components/common/EmptyState";
-import {useServices} from "@/services/queries/serviceQueries";
-
+import ServiceCard from '@/components/cards/ServiceCard';
+import EmptyState from '@/components/common/EmptyState';
+import {useServices} from '@/services/queries/serviceQueries';
+import {useUser} from '@/services/hooks/userQueries';
+import {showToast} from '@/utils/toast';
 
 export default function Home() {
     const [searchQuery, setSearchQuery] = useState('');
-    const { data: services, isLoading, refetch, isFetching } = useServices();
+    const {data: user, isLoading: loadingUser} = useUser();
+    const {
+        data: services,
+        isLoading,
+        refetch,
+        isFetching,
+        error: servicesError,
+    } = useServices();
 
-    // Get unique emails count
-    const uniqueEmails = services
-        ? new Set(services.map(s => s.email)).size
-        : 0;
+    // Notify user if no services exist
+    useEffect(() => {
+        if (!isLoading && services && services.length === 0) {
+            showToast.info(
+                'No Services Yet!',
+                'Tap "Add Service" to get started!'
+            );
+        }
+    }, [isLoading, services]);
 
-    // Get services with passwords count
-    const servicesWithPassword = services
-        ? services.filter(s => s.hasPassword).length
-        : 0;
-
-    // Filter services based on search
-    const filteredServices = services?.filter(
-        service =>
-            service.serviceName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            service.email.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    useEffect(() => {
+        if (servicesError) {
+            showToast.error(
+                'Error Loading Services',
+                (servicesError as any)?.message || 'Please try again'
+            );
+        }
+    }, [servicesError]);
 
     if (isLoading) {
-        return <LoadingScreen message="Loading your services..." />;
+        return <LoadingScreen message="Loading your services..."/>;
     }
+
+    // ✅ Pre-calculate stats safely
+    const uniqueEmails = new Set(services?.map((s) => s.email) ?? []).size;
+    const servicesWithPassword =
+        services?.filter((s) => s.hasPassword).length ?? 0;
+
+    const filteredServices =
+        services?.filter(
+            (service) =>
+                service.serviceName
+                    .toLowerCase()
+                    .includes(searchQuery.toLowerCase()) ||
+                service.email.toLowerCase().includes(searchQuery.toLowerCase())
+        ) ?? [];
 
     return (
         <View className="flex-1 bg-gray-50">
-            <StatusBar style="dark" />
+            <StatusBar style="dark"/>
 
             {/* Header */}
             <View className="bg-white pt-14 pb-6 px-6 border-b border-gray-100">
                 <View className="flex-row items-center justify-between mb-6">
                     <View>
-                        <Text className="text-gray-500 text-sm">Welcome back,</Text>
-                        <Text className="text-gray-900 font-bold text-2xl">Dashboard 👋</Text>
+                        <Text className="text-gray-500 text-sm">
+                            Welcome back, {user?.name?.split(' ')[0] || ''}! 🥰
+                        </Text>
+                        <Text className="text-gray-900 font-bold text-2xl">
+                            Dashboard 👋
+                        </Text>
                     </View>
                     <TouchableOpacity
                         onPress={() => router.push('/(tabs)/settings')}
                         className="w-10 h-10 bg-gray-100 rounded-full items-center justify-center"
                     >
-                        <Ionicons name="settings-outline" size={22} color="#374151" />
+                        <Ionicons name="settings-outline" size={22} color="#374151"/>
                     </TouchableOpacity>
                 </View>
 
                 {/* Search Bar */}
-                <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
+                <SearchBar value={searchQuery} onChangeText={setSearchQuery}/>
             </View>
 
             <ScrollView
@@ -78,7 +100,9 @@ export default function Home() {
             >
                 {/* Stats */}
                 <View className="px-6 py-6">
-                    <Text className="text-gray-900 font-bold text-lg mb-4">Overview</Text>
+                    <Text className="text-gray-900 font-bold text-lg mb-4">
+                        Overview
+                    </Text>
                     <View className="flex-row gap-3">
                         <StatCard
                             title="Total Services"
@@ -127,9 +151,9 @@ export default function Home() {
                     </View>
 
                     {/* Services List */}
-                    {filteredServices && filteredServices.length > 0 ? (
-                        filteredServices.slice(0, 5).map(service => (
-                            <ServiceCard key={service.id} service={service} />
+                    {filteredServices.length > 0 ? (
+                        filteredServices.slice(0, 5).map((service) => (
+                            <ServiceCard key={service.id} service={service}/>
                         ))
                     ) : searchQuery ? (
                         <EmptyState
@@ -149,16 +173,14 @@ export default function Home() {
                 </View>
             </ScrollView>
 
-            {/* Floating Add Button */}
-            {services && services.length > 0 && (
-                <TouchableOpacity
-                    onPress={() => router.push('/service/add')}
-                    className="absolute bottom-6 right-6 bg-blue-600 w-16 h-16 rounded-full items-center justify-center shadow-lg active:scale-95"
-                    activeOpacity={0.9}
-                >
-                    <Ionicons name="add" size={28} color="white" />
-                </TouchableOpacity>
-            )}
+            {/* ✅ Floating Add Button (always visible) */}
+            <TouchableOpacity
+                onPress={() => router.push('/service/add')}
+                className="absolute bottom-6 right-6 bg-blue-600 w-16 h-16 rounded-full items-center justify-center shadow-lg active:scale-95"
+                activeOpacity={0.9}
+            >
+                <Ionicons name="add" size={28} color="white"/>
+            </TouchableOpacity>
         </View>
     );
 }
