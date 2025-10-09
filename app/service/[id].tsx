@@ -11,10 +11,11 @@ import {getCategoryById} from '@/constants/categories';
 import {useDeleteService, useService} from '@/services/queries/serviceQueries';
 import {secureStorage} from '@/services/secureStorage';
 import {showToast} from '@/utils/toast';
+import ErrorScreen from "@/components/common/ErrorScreen";
 
 export default function ServiceDetail() {
     const {id} = useLocalSearchParams<{ id: string }>();
-    const {data: service, isLoading} = useService(id as string);
+    const {data: service, isLoading, error: serviceError, refetch} = useService(id as string);
     const {mutate: deleteService, isPending: deleting} = useDeleteService();
 
     const [password, setPassword] = useState<string | null>(null);
@@ -168,7 +169,11 @@ export default function ServiceDetail() {
     };
 
     if (isLoading) {
-        return <LoadingScreen message="Loading service..."/>;
+        return <LoadingScreen message="Loading your service..."/>;
+    }
+
+    if (serviceError) {
+        return <ErrorScreen onRetry={() => refetch()}/>
     }
 
     if (!service) {

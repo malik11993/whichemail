@@ -14,7 +14,7 @@ import {showToast} from '@/utils/toast';
 
 export default function Home() {
     const [searchQuery, setSearchQuery] = useState('');
-    const {data: user, isLoading: loadingUser} = useUser();
+    const {data: user, isLoading: loadingUser, error: userError} = useUser();
     const {
         data: services,
         isLoading,
@@ -30,17 +30,17 @@ export default function Home() {
     useEffect(() => {
         if (!isLoading && services && services.length === 0) {
             showToast.info(
-                'No Services Yet!',
+                'No Services Yet! 😯',
                 'Tap "Add Service" to get started!'
             );
         }
     }, [isLoading, services]);
 
     useEffect(() => {
-        if (servicesError) {
+        if (servicesError || userError) {
             showToast.error(
-                'Error Loading Services',
-                (servicesError as any)?.message || 'Please try again'
+                'Error setting up your workspace! 😥',
+                (servicesError as any)?.message || (userError as any)?.message || 'Please try again'
             );
         }
     }, [servicesError]);
