@@ -283,7 +283,7 @@ export default function Settings() {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-gray-900 font-semibold">Version</Text>
-                                <Text className="text-gray-500 text-xs mt-0.5">1.1.1</Text>
+                                <Text className="text-gray-500 text-xs mt-0.5">1.0.0</Text>
                             </View>
                         </View>
                     </View>
