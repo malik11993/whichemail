@@ -35,6 +35,7 @@ note.txt
 # local env files
 .env*.local
 .env
+whatsapp.ts
 
 # typescript
 *.tsbuildinfo

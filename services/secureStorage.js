@@ -33,7 +33,7 @@ export const secureStorage = {
         }
     },
 
-    // Check if password feature is enabled
+    // Check if the password feature is enabled
     async isPasswordFeatureEnabled() {
         try {
             const enabled = await SecureStore.getItemAsync('password_feature_enabled');

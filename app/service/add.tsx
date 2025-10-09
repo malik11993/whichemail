@@ -269,7 +269,7 @@ export default function AddService() {
                     )}
 
                     {/* Actions */}
-                    <View className="mt-2 mb-8">
+                    <View className="mt-2 mb-8 text-white">
                         <Button title={isPending ? 'Saving...' : 'Save Service'} onPress={handleSubmit}
                                 loading={isPending} disabled={!canSubmit}/>
                         <View className="h-3"/>

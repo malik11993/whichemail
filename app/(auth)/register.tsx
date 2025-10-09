@@ -192,7 +192,9 @@ export default function Register() {
 
                     {/* Social Sign Up (Optional for future) */}
                     <TouchableOpacity
-                        className="flex-row items-center justify-center bg-white border-2 border-gray-200 rounded-xl py-4 mb-6">
+                        className="flex-row items-center justify-center bg-white border-2 border-gray-200 rounded-xl py-4 mb-6"
+                        onPress={() =>  showToast.info("Currently under dev mode!", "Please sign up with your credentials")}
+                    >
                         <Ionicons name="logo-google" size={20} color="#4285F4"/>
                         <Text className="ml-2 font-semibold text-gray-700">
                             Sign up with Google
@@ -201,7 +203,7 @@ export default function Register() {
                 </View>
 
                 {/* Footer */}
-                <View className="px-6 pb-8 mb-4">
+                <View className="px-6 mb-8">
                     <View className="flex-row items-center justify-center">
                         <Text className="text-gray-600">Already have an account? </Text>
                         <TouchableOpacity onPress={() => router.push('/(auth)/login')}>

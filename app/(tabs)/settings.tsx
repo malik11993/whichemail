@@ -1,20 +1,14 @@
-import {
-    View,
-    Text,
-    ScrollView,
-    TouchableOpacity,
-    Switch,
-    Alert,
-} from 'react-native';
-import { useState, useEffect } from 'react';
-import { router } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import { StatusBar } from 'expo-status-bar';
+import {Alert, Linking, ScrollView, Switch, Text, TouchableOpacity, View,} from 'react-native';
+import {useEffect, useState} from 'react';
+import {router} from 'expo-router';
+import {Ionicons} from '@expo/vector-icons';
+import {StatusBar} from 'expo-status-bar';
 import * as LocalAuthentication from 'expo-local-authentication';
 import {secureStorage} from "@/services/secureStorage";
 import {showToast} from "@/utils/toast";
 import {useLogout} from "@/services/hooks/useAuth";
 import {useUser} from "@/services/hooks/userQueries";
+import {openWhatsApp} from "@/whatsapp";
 
 
 export default function Settings() {
@@ -23,11 +17,12 @@ export default function Settings() {
     const [biometricType, setBiometricType] = useState<string>('');
     const [loading, setLoading] = useState(true);
     const {data: user, isLoading: loadingUser} = useUser();
-    const {mutate: logOut } = useLogout();
+    const {mutate: logOut} = useLogout();
 
     useEffect(() => {
         checkSettings();
     }, []);
+
 
     const checkSettings = async () => {
         try {
@@ -64,7 +59,7 @@ export default function Settings() {
                 Alert.alert(
                     'Biometric Not Available',
                     'Please set up Face ID or Fingerprint on your device to enable password storage.',
-                    [{ text: 'OK' }]
+                    [{text: 'OK'}]
                 );
                 return;
             }
@@ -91,7 +86,7 @@ export default function Settings() {
                 'Disable Password Storage?',
                 'This will not delete existing passwords, but you won\'t be able to add new ones until you enable it again.',
                 [
-                    { text: 'Cancel', style: 'cancel' },
+                    {text: 'Cancel', style: 'cancel'},
                     {
                         text: 'Disable',
                         style: 'destructive',
@@ -111,7 +106,7 @@ export default function Settings() {
             'Delete All Passwords?',
             'This action cannot be undone. All saved passwords will be permanently deleted.',
             [
-                { text: 'Cancel', style: 'cancel' },
+                {text: 'Cancel', style: 'cancel'},
                 {
                     text: 'Delete',
                     style: 'destructive',
@@ -126,7 +121,7 @@ export default function Settings() {
 
     return (
         <View className="flex-1 bg-gray-50">
-            <StatusBar style="dark" />
+            <StatusBar style="dark"/>
 
             {/* Header */}
             <View className="bg-white pt-14 pb-4 px-6 border-b border-gray-100">
@@ -139,7 +134,7 @@ export default function Settings() {
                     <View className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-2xl p-6 shadow-sm">
                         <View className="flex-row items-center">
                             <View className="bg-white/20 rounded-full w-16 h-16 items-center justify-center mr-4">
-                                <Ionicons name="person" size={32} color="gray" />
+                                <Ionicons name="person" size={32} color="gray"/>
                             </View>
                             <View className="flex-1">
                                 <Text className="text-blue-500 font-bold text-xl mb-1">
@@ -162,7 +157,7 @@ export default function Settings() {
                         <View className="px-4 py-4 flex-row items-center justify-between">
                             <View className="flex-row items-center flex-1">
                                 <View className="bg-blue-100 rounded-full p-2 mr-3">
-                                    <Ionicons name="lock-closed" size={20} color="#3b82f6" />
+                                    <Ionicons name="lock-closed" size={20} color="#3b82f6"/>
                                 </View>
                                 <View className="flex-1">
                                     <Text className="text-gray-900 font-semibold">
@@ -188,7 +183,7 @@ export default function Settings() {
                                         name="alert-circle"
                                         size={16}
                                         color="#f59e0b"
-                                        style={{ marginTop: 2, marginRight: 6 }}
+                                        style={{marginTop: 2, marginRight: 6}}
                                     />
                                     <Text className="text-amber-600 text-xs flex-1">
                                         Biometric authentication not available. Please enable Face ID or
@@ -206,7 +201,7 @@ export default function Settings() {
                             className="bg-white rounded-2xl px-4 py-4 flex-row items-center shadow-sm border border-gray-100"
                         >
                             <View className="bg-red-100 rounded-full p-2 mr-3">
-                                <Ionicons name="trash" size={20} color="#ef4444" />
+                                <Ionicons name="trash" size={20} color="#ef4444"/>
                             </View>
                             <View className="flex-1">
                                 <Text className="text-gray-900 font-semibold">
@@ -216,7 +211,7 @@ export default function Settings() {
                                     Permanently remove all saved passwords
                                 </Text>
                             </View>
-                            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+                            <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
                         </TouchableOpacity>
                     )}
                 </View>
@@ -229,9 +224,11 @@ export default function Settings() {
 
                     <View className="bg-white rounded-2xl shadow-sm border border-gray-100">
                         {/* About */}
-                        <TouchableOpacity className="px-4 py-4 flex-row items-center border-b border-gray-100">
+                        <TouchableOpacity className="px-4 py-4 flex-row items-center border-b border-gray-100"
+                                          onPress={() => router.push("/service/about")}
+                        >
                             <View className="bg-purple-100 rounded-full p-2 mr-3">
-                                <Ionicons name="information-circle" size={20} color="#8b5cf6" />
+                                <Ionicons name="information-circle" size={20} color="#8b5cf6"/>
                             </View>
                             <View className="flex-1">
                                 <Text className="text-gray-900 font-semibold">About</Text>
@@ -239,13 +236,15 @@ export default function Settings() {
                                     Learn more about WhichEmail
                                 </Text>
                             </View>
-                            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+                            <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
                         </TouchableOpacity>
 
                         {/* Privacy Policy */}
-                        <TouchableOpacity className="px-4 py-4 flex-row items-center border-b border-gray-100">
+                        <TouchableOpacity className="px-4 py-4 flex-row items-center border-b border-gray-100"
+                                          onPress={() => showToast.info("Private policy coming soon!")}
+                        >
                             <View className="bg-green-100 rounded-full p-2 mr-3">
-                                <Ionicons name="shield-checkmark" size={20} color="#10b981" />
+                                <Ionicons name="shield-checkmark" size={20} color="#10b981"/>
                             </View>
                             <View className="flex-1">
                                 <Text className="text-gray-900 font-semibold">
@@ -255,13 +254,16 @@ export default function Settings() {
                                     How we handle your data
                                 </Text>
                             </View>
-                            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+                            <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
                         </TouchableOpacity>
 
                         {/* Terms of Service */}
-                        <TouchableOpacity className="px-4 py-4 flex-row items-center border-b border-gray-100">
-                            <View className="bg-orange-100 rounded-full p-2 mr-3">
-                                <Ionicons name="document-text" size={20} color="#f97316" />
+                        <TouchableOpacity className="px-4 py-4 flex-row items-center border-b border-gray-100"
+                                          onPress={() => showToast.info("Terms of Service coming soon!")}
+                        >
+                            <View className="bg-orange-100 rounded-full p-2 mr-3"
+                            >
+                                <Ionicons name="document-text" size={20} color="#f97316"/>
                             </View>
                             <View className="flex-1">
                                 <Text className="text-gray-900 font-semibold">
@@ -271,17 +273,17 @@ export default function Settings() {
                                     Our terms and conditions
                                 </Text>
                             </View>
-                            <Ionicons name="chevron-forward" size={20} color="#9ca3af" />
+                            <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
                         </TouchableOpacity>
 
                         {/* Version */}
                         <View className="px-4 py-4 flex-row items-center">
                             <View className="bg-gray-100 rounded-full p-2 mr-3">
-                                <Ionicons name="code-slash" size={20} color="#6b7280" />
+                                <Ionicons name="code-slash" size={20} color="#6b7280"/>
                             </View>
                             <View className="flex-1">
                                 <Text className="text-gray-900 font-semibold">Version</Text>
-                                <Text className="text-gray-500 text-xs mt-0.5">1.0.0</Text>
+                                <Text className="text-gray-500 text-xs mt-0.5">1.1.1</Text>
                             </View>
                         </View>
                     </View>
@@ -297,7 +299,7 @@ export default function Settings() {
                                 'Sign Out',
                                 'Are you sure you want to sign out?',
                                 [
-                                    { text: 'Cancel', style: 'cancel' },
+                                    {text: 'Cancel', style: 'cancel'},
                                     {
                                         text: 'Sign Out',
                                         style: 'destructive',
@@ -312,28 +314,39 @@ export default function Settings() {
                         className="bg-white rounded-2xl px-4 py-4 flex-row items-center shadow-sm border border-red-200"
                     >
                         <View className="bg-red-100 rounded-full p-2 mr-3">
-                            <Ionicons name="log-out" size={20} color="#ef4444" />
+                            <Ionicons name="log-out" size={20} color="#ef4444"/>
                         </View>
                         <View className="flex-1">
                             <Text className="text-red-600 font-semibold">Sign Out</Text>
                         </View>
-                        <Ionicons name="chevron-forward" size={20} color="#ef4444" />
+                        <Ionicons name="chevron-forward" size={20} color="#ef4444"/>
                     </TouchableOpacity>
                 </View>
 
                 {/* Creator Credit */}
-                <View className="px-6 pb-12">
+                {/* Creator Credit */}
+                <View className="px-6 pb-12 mt-10">
                     <View className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-100">
                         <View className="flex-row items-center mb-2">
-                            <Ionicons name="heart" size={16} color="#ef4444" />
+                            <Ionicons name="heart" size={16} color="#ef4444"/>
                             <Text className="text-gray-700 text-sm ml-2">Made with love by</Text>
                         </View>
-                        <Text className="text-gray-900 font-bold text-lg">
-                            Fanyi Charllson
-                        </Text>
+
+                        <Text className="text-gray-900 font-bold text-lg">Fanyi Charllson</Text>
                         <Text className="text-gray-600 text-sm mt-1">
                             Building tools to make life easier, one app at a time.
                         </Text>
+
+                        {/* WhatsApp Button */}
+                        <TouchableOpacity
+                            onPress={openWhatsApp}
+                            className="mt-5 bg-blue-600 py-3 px-5 rounded-xl flex-row items-center justify-center"
+                        >
+                            <Ionicons name="logo-whatsapp" size={20} color="#fff"/>
+                            <Text className="text-white font-semibold text-base ml-2">
+                                Let’s Chat / Feedback
+                            </Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
             </ScrollView>

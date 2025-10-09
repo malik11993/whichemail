@@ -25,7 +25,7 @@ export default function Button({
             case 'secondary':
                 return 'bg-gray-600 active:bg-gray-700';
             case 'outline':
-                return 'bg-transparent border-2 border-blue-600';
+                return 'bg-red-500 text-white border-2 border-red-500';
             default:
                 return 'bg-blue-600';
         }
@@ -35,7 +35,7 @@ export default function Button({
         if (disabled || loading) {
             return 'text-gray-500';
         }
-        return variant === 'outline' ? 'text-blue-600' : 'text-white';
+        return variant === 'outline' ? 'text-white' : 'text-white';
     };
 
     return (

@@ -3,9 +3,9 @@ import {account, appwriteDbConfig, tablesDB} from '../appwrite/appwrite';
 import {ID} from 'appwrite';
 import {showToast} from '@/utils/toast';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {appwriteConfig} from "@/utils/expoContants";
 
-//Get User table_id
-const TABLE_ID = process.env.EXPO_PUBLIC_APPWRITE_TABLE_USER_ID!;
+
 
 
 // 🔹 REGISTER
@@ -27,7 +27,7 @@ export const useRegister = () => {
             //  Store user info in Appwrite Table for extended profile
             await tablesDB.createRow({
               databaseId: appwriteDbConfig.databaseId,
-              tableId: TABLE_ID,
+              tableId: appwriteConfig.tableUserId,
               rowId: ID.unique(),
               data: { name, email, userId: user.$id }
             });

@@ -1,10 +1,11 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
-import {ID, Models, Query} from "appwrite";
+import {ID, Models, Query, Permission, Role} from "appwrite";
 import {appwriteDbConfig, tablesDB} from "@/services/appwrite/appwrite";
 import {showToast} from "@/utils/toast";
+import {appwriteConfig} from "@/utils/expoContants";
+import {useUser} from "@/services/hooks/userQueries";
 
-//Get table service id
-const TABLE_SERVICE_ID = process.env.EXPO_PUBLIC_APPWRITE_TABLE_SERVICE_ID!;
+
 
 // ---------- HELPERS ----------
 const mapRowToService = (row: Models.Row): Service => ({
@@ -21,13 +22,17 @@ const mapRowToService = (row: Models.Row): Service => ({
 
 // ---------- API CALLS ----------
 
-// Fetch all services
-const fetchServices = async (): Promise<Service[]> => {
+// Fetch all services for a user
+const fetchServices = async (userId?: string): Promise<Service[]> => {
+    if (!userId) return [];
     try {
         const res = await tablesDB.listRows({
             databaseId: appwriteDbConfig.databaseId,
-            tableId: TABLE_SERVICE_ID,
-            queries: [Query.orderDesc("$createdAt")],
+            tableId: appwriteConfig.tableServiceId,
+            queries: [
+                Query.equal("ownerId", userId),
+                Query.orderDesc("$createdAt")
+            ],
         });
         return res.rows.map(mapRowToService);
     } catch (e: any) {
@@ -42,7 +47,7 @@ const fetchServiceById = async (id: string): Promise<Service | undefined> => {
     try {
         const row = await tablesDB.getRow({
             databaseId: appwriteDbConfig.databaseId,
-            tableId: TABLE_SERVICE_ID,
+            tableId: appwriteConfig.tableServiceId,
             rowId: id,
         });
         return mapRowToService(row);
@@ -53,14 +58,15 @@ const fetchServiceById = async (id: string): Promise<Service | undefined> => {
     }
 };
 
-// Search services
-const searchServices = async (query: string): Promise<Service[]> => {
-    if (!query) return [];
+// Search services for a user
+const searchServices = async (query: string, userId?: string): Promise<Service[]> => {
+    if (!query || !userId) return [];
     try {
         const res = await tablesDB.listRows({
             databaseId: appwriteDbConfig.databaseId,
-            tableId: TABLE_SERVICE_ID,
+            tableId: appwriteConfig.tableServiceId,
             queries: [
+                Query.equal("ownerId", userId),
                 Query.or([
                     Query.search("serviceName", query),
                     Query.search("email", query),
@@ -71,7 +77,7 @@ const searchServices = async (query: string): Promise<Service[]> => {
         return res.rows.map(mapRowToService);
     } catch (e: any) {
         console.warn("Search failed, falling back to client filtering:", e);
-        const all = await fetchServices();
+        const all = await fetchServices(userId);
         const q = query.toLowerCase();
         return all.filter(
             (s) =>
@@ -84,9 +90,12 @@ const searchServices = async (query: string): Promise<Service[]> => {
 // ---------- REACT QUERY HOOKS ----------
 
 export const useServices = () => {
+    const { data: user } = useUser();
+    const userId = user?.$id;
     return useQuery({
-        queryKey: ["services"],
-        queryFn: fetchServices,
+        queryKey: ["services", userId],
+        queryFn: () => fetchServices(userId),
+        enabled: !!userId,
     });
 };
 
@@ -99,10 +108,12 @@ export const useService = (id: string) => {
 };
 
 export const useSearchServices = (query: string) => {
+    const { data: user } = useUser();
+    const userId = user?.$id;
     return useQuery({
-        queryKey: ["services", "search", query],
-        queryFn: () => searchServices(query),
-        enabled: query.length > 0,
+        queryKey: ["services", "search", query, userId],
+        queryFn: () => searchServices(query, userId),
+        enabled: !!userId && query.length > 0,
     });
 };
 
@@ -111,29 +122,40 @@ export const useSearchServices = (query: string) => {
 // Create
 export const useCreateService = () => {
     const queryClient = useQueryClient();
+    const { data: user } = useUser();
 
     return useMutation({
         mutationFn: async (
             newService: Omit<Service, "id" | "createdAt" | "updatedAt">
         ) => {
+            const userId = user?.$id;
+            if (!userId) throw new Error("Not authenticated");
             const now = new Date().toISOString();
             const row = await tablesDB.createRow({
                 databaseId: appwriteDbConfig.databaseId,
-                tableId: TABLE_SERVICE_ID,
+                tableId: appwriteConfig.tableServiceId,
                 rowId: ID.unique(),
                 data: {
                     ...newService,
+                    ownerId: userId,
                     createdAt: now,
                     updatedAt: now,
                 },
+                permissions: [
+                    Permission.read(Role.user(userId)),
+                    Permission.update(Role.user(userId)),
+                    Permission.delete(Role.user(userId)),
+                    Permission.write(Role.user(userId)),
+                ],
             });
             return mapRowToService(row);
         },
         onSuccess: (data) => {
-            queryClient.setQueryData(["services"], (old: Service[] | undefined) =>
+            // include user in cache key to avoid cross-user mix
+            queryClient.setQueryData(["services", user?.$id], (old: Service[] | undefined) =>
                 old ? [data, ...old] : [data]
             );
-            queryClient.invalidateQueries({queryKey: ["services"]});
+            queryClient.invalidateQueries({queryKey: ["services", user?.$id]});
             showToast.success("Service Added", "Your service has been saved");
         },
         onError: (error: any) => {
@@ -148,21 +170,22 @@ export const useCreateService = () => {
 // Delete
 export const useDeleteService = () => {
     const queryClient = useQueryClient();
+    const { data: user } = useUser();
 
     return useMutation({
         mutationFn: async (id: string) => {
             await tablesDB.deleteRow({
                 databaseId: appwriteDbConfig.databaseId,
-                tableId: TABLE_SERVICE_ID,
+                tableId: appwriteConfig.tableServiceId,
                 rowId: id,
             });
             return id;
         },
         onSuccess: (id: string) => {
-            queryClient.setQueryData(["services"], (old: Service[] | undefined) =>
+            queryClient.setQueryData(["services", user?.$id], (old: Service[] | undefined) =>
                 (old || []).filter((s) => s.id !== id)
             );
-            queryClient.invalidateQueries({queryKey: ["services"]});
+            queryClient.invalidateQueries({queryKey: ["services", user?.$id]});
             showToast.success("Service Deleted");
         },
         onError: (error: any) => {
@@ -177,6 +200,7 @@ export const useDeleteService = () => {
 // ✅ Update Service Hook
 export const useUpdateService = () => {
     const queryClient = useQueryClient();
+    const { data: user } = useUser();
 
     return useMutation({
         // mutationFn accepts one object argument
@@ -185,7 +209,7 @@ export const useUpdateService = () => {
 
             const updatedRow = await tablesDB.updateRow({
                 databaseId: appwriteDbConfig.databaseId,
-                tableId: TABLE_SERVICE_ID,
+                tableId: appwriteConfig.tableServiceId,
                 rowId: id,
                 data: {
                     ...service,
@@ -198,13 +222,13 @@ export const useUpdateService = () => {
 
         onSuccess: (updatedService) => {
             // ✅ Update cache optimistically
-            queryClient.setQueryData(['services'], (old: Service[] | undefined) =>
+            queryClient.setQueryData(['services', user?.$id], (old: Service[] | undefined) =>
                 old
                     ? old.map((s) => (s.id === updatedService.id ? updatedService : s))
                     : [updatedService]
             );
 
-            queryClient.invalidateQueries({queryKey: ['services']});
+            queryClient.invalidateQueries({queryKey: ['services', user?.$id]});
 
             showToast.success('Service Updated ✅', 'Your service details have been saved');
         },
