@@ -1,4 +1,4 @@
-import {RefreshControl, ScrollView, Text, TouchableOpacity, View,} from 'react-native';
+import {RefreshControl, ScrollView, Text, TouchableOpacity, View, ActivityIndicator, Modal} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {router} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
@@ -23,6 +23,9 @@ export default function Home() {
         error: servicesError,
     } = useServices();
 
+    // Track initial load
+    const isInitialLoading = isLoading || loadingUser;
+
     // Notify user if no services exist
     useEffect(() => {
         if (!isLoading && services && services.length === 0) {
@@ -41,10 +44,6 @@ export default function Home() {
             );
         }
     }, [servicesError]);
-
-    if (isLoading) {
-        return <LoadingScreen message="Loading your services..."/>;
-    }
 
     // ✅ Pre-calculate stats safely
     const uniqueEmails = new Set(services?.map((s) => s.email) ?? []).size;
@@ -78,6 +77,7 @@ export default function Home() {
                     <TouchableOpacity
                         onPress={() => router.push('/(tabs)/settings')}
                         className="w-10 h-10 bg-gray-100 rounded-full items-center justify-center"
+                        disabled={isInitialLoading}
                     >
                         <Ionicons name="settings-outline" size={22} color="#374151"/>
                     </TouchableOpacity>
@@ -90,9 +90,10 @@ export default function Home() {
             <ScrollView
                 className="flex-1"
                 showsVerticalScrollIndicator={false}
+                scrollEnabled={!isInitialLoading}
                 refreshControl={
                     <RefreshControl
-                        refreshing={isFetching}
+                        refreshing={isFetching && !isInitialLoading}
                         onRefresh={refetch}
                         tintColor="#3b82f6"
                     />
@@ -178,9 +179,47 @@ export default function Home() {
                 onPress={() => router.push('/service/add')}
                 className="absolute bottom-6 right-6 bg-blue-600 w-16 h-16 rounded-full items-center justify-center shadow-lg active:scale-95"
                 activeOpacity={0.9}
+                disabled={isInitialLoading}
             >
                 <Ionicons name="add" size={28} color="white"/>
             </TouchableOpacity>
+
+            {/* ✨ Modern Loading Overlay */}
+            <Modal
+                visible={isInitialLoading}
+                transparent={true}
+                animationType="fade"
+                statusBarTranslucent={true}
+            >
+                <View className="flex-1 bg-black/50 items-center justify-center">
+                    <View className="bg-white rounded-3xl px-8 py-10 mx-6 items-center shadow-2xl">
+                        {/* Animated Spinner */}
+                        <View className="mb-6">
+                            <ActivityIndicator size="large" color="#3b82f6" />
+                        </View>
+
+                        {/* Icon */}
+                        <View className="bg-blue-100 w-16 h-16 rounded-full items-center justify-center mb-4">
+                            <Ionicons name="sync" size={32} color="#3b82f6" />
+                        </View>
+
+                        {/* Loading Text */}
+                        <Text className="text-gray-900 font-bold text-xl mb-2">
+                            Loading Dashboard
+                        </Text>
+                        <Text className="text-gray-500 text-center text-sm">
+                            Setting up your workspace...{'\n'}This will only take a moment
+                        </Text>
+
+                        {/* Progress Dots */}
+                        <View className="flex-row gap-2 mt-6">
+                            <View className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
+                            <View className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}} />
+                            <View className="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style={{animationDelay: '0.4s'}} />
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
