@@ -1,9 +1,8 @@
-import {RefreshControl, ScrollView, Text, TouchableOpacity, View, ActivityIndicator, Modal} from 'react-native';
+import {ActivityIndicator, Modal, RefreshControl, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {router} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {StatusBar} from 'expo-status-bar';
-import LoadingScreen from '@/components/common/LoadingScreen';
 import SearchBar from '@/components/common/SearchBar';
 import StatCard from '@/components/cards/StatCard';
 import ServiceCard from '@/components/cards/ServiceCard';
@@ -25,6 +24,7 @@ export default function Home() {
 
     // Track initial load
     const isInitialLoading = isLoading || loadingUser;
+    const error = userError || servicesError;
 
     // Notify user if no services exist
     useEffect(() => {
@@ -44,6 +44,14 @@ export default function Home() {
             );
         }
     }, [servicesError]);
+
+    //show error toast if error
+    if (error) {
+        showToast.error(
+            'Error setting up your workspace! 😥',
+            (servicesError as any)?.message || (userError as any)?.message || 'Please try again'
+        );
+    }
 
     // ✅ Pre-calculate stats safely
     const uniqueEmails = new Set(services?.map((s) => s.email) ?? []).size;
@@ -195,12 +203,12 @@ export default function Home() {
                     <View className="bg-white rounded-3xl px-8 py-10 mx-6 items-center shadow-2xl">
                         {/* Animated Spinner */}
                         <View className="mb-6">
-                            <ActivityIndicator size="large" color="#3b82f6" />
+                            <ActivityIndicator size="large" color="#3b82f6"/>
                         </View>
 
                         {/* Icon */}
                         <View className="bg-blue-100 w-16 h-16 rounded-full items-center justify-center mb-4">
-                            <Ionicons name="sync" size={32} color="#3b82f6" />
+                            <Ionicons name="sync" size={32} color="#3b82f6"/>
                         </View>
 
                         {/* Loading Text */}
@@ -213,9 +221,11 @@ export default function Home() {
 
                         {/* Progress Dots */}
                         <View className="flex-row gap-2 mt-6">
-                            <View className="w-2 h-2 bg-blue-600 rounded-full animate-pulse" />
-                            <View className="w-2 h-2 bg-blue-400 rounded-full animate-pulse" style={{animationDelay: '0.2s'}} />
-                            <View className="w-2 h-2 bg-blue-300 rounded-full animate-pulse" style={{animationDelay: '0.4s'}} />
+                            <View className="w-2 h-2 bg-blue-600 rounded-full animate-pulse"/>
+                            <View className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"
+                                  style={{animationDelay: '0.2s'}}/>
+                            <View className="w-2 h-2 bg-blue-300 rounded-full animate-pulse"
+                                  style={{animationDelay: '0.4s'}}/>
                         </View>
                     </View>
                 </View>

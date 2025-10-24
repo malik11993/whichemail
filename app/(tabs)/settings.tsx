@@ -3,12 +3,11 @@ import {useEffect, useState} from 'react';
 import {router} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {StatusBar} from 'expo-status-bar';
-import * as LocalAuthentication from 'expo-local-authentication';
 import {secureStorage} from "@/services/secureStorage";
 import {showToast} from "@/utils/toast";
 import {useLogout} from "@/services/hooks/useAuth";
 import {useUser} from "@/services/hooks/userQueries";
-import {openWhatsApp} from "@/whatsapp";
+import {authenticateUser, getAuthenticationTypeName, isAuthenticationAvailable} from "@/utils/authUtils";
 
 
 export default function Settings() {
@@ -16,12 +15,26 @@ export default function Settings() {
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [biometricType, setBiometricType] = useState<string>('');
     const [loading, setLoading] = useState(true);
-    const {data: user, isLoading: loadingUser} = useUser();
+    const {data: user} = useUser();
     const {mutate: logOut} = useLogout();
+
+    const whatsappNumber = "237670242458";
+    const message = "Hello Fanyi, from WhichEmail App! 👋 I’d love to share some feedback about WhichEmail.";
+    const whatsappLink = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
     useEffect(() => {
         checkSettings();
     }, []);
+
+    const openWhatsApp = async () => {
+        try {
+            showToast.info("Opening WhatsApp...");
+            await Linking.openURL(whatsappLink);
+        } catch (error) {
+            showToast.error("Error Opening Whatsapp!", "Please ensure you have whatsapp installed or try again later.");
+            console.error("Error opening WhatsApp:", error);
+        }
+    };
 
 
     const checkSettings = async () => {
@@ -31,19 +44,12 @@ export default function Settings() {
             setPasswordFeatureEnabled(enabled);
 
             // Check biometric availability
-            const compatible = await LocalAuthentication.hasHardwareAsync();
-            const enrolled = await LocalAuthentication.isEnrolledAsync();
-            setBiometricAvailable(compatible && enrolled);
+            const authenticationAvailable = await isAuthenticationAvailable();
+            setBiometricAvailable(authenticationAvailable);
 
-            if (compatible && enrolled) {
-                const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
-                if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
-                    setBiometricType('Face ID');
-                } else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
-                    setBiometricType('Fingerprint');
-                } else {
-                    setBiometricType('Biometric');
-                }
+            if (authenticationAvailable) {
+                const authType = await getAuthenticationTypeName();
+                setBiometricType(authType);
             }
         } catch (error) {
             console.error('Error checking settings:', error);
@@ -54,31 +60,16 @@ export default function Settings() {
 
     const togglePasswordFeature = async (value: boolean) => {
         if (value) {
-            // Enabling - require biometric authentication
-            if (!biometricAvailable) {
-                Alert.alert(
-                    'Biometric Not Available',
-                    'Please set up Face ID or Fingerprint on your device to enable password storage.',
-                    [{text: 'OK'}]
-                );
-                return;
-            }
-
-            // Authenticate before enabling
-            const result = await LocalAuthentication.authenticateAsync({
-                promptMessage: 'Authenticate to enable password storage',
-                fallbackLabel: 'Use passcode',
+            // Enabling - require authentication
+            const result = await authenticateUser({
+                purpose: 'enable-password',
+                showSuccessToast: true,
+                successMessage: 'You can now save passwords securely',
             });
 
             if (result.success) {
                 await secureStorage.setPasswordFeature(true);
                 setPasswordFeatureEnabled(true);
-                showToast.success(
-                    'Password Storage Enabled',
-                    'You can now save passwords securely'
-                );
-            } else {
-                showToast.error('Authentication Failed', 'Please try again');
             }
         } else {
             // Disabling - show confirmation
@@ -93,13 +84,14 @@ export default function Settings() {
                         onPress: async () => {
                             await secureStorage.setPasswordFeature(false);
                             setPasswordFeatureEnabled(false);
-                            showToast.info('Password Storage Disabled');
+                            showToast.info('Password Storage Disabled!', 'Password temporarily storage disabled');
                         },
                     },
                 ]
             );
         }
     };
+
 
     const handleDeleteAllPasswords = () => {
         Alert.alert(
@@ -231,7 +223,7 @@ export default function Settings() {
                                 <Ionicons name="information-circle" size={20} color="#8b5cf6"/>
                             </View>
                             <View className="flex-1">
-                                <Text className="text-gray-900 font-semibold">About</Text>
+                                <Text className="text-gray-900 font-semibold">About WhichEmail</Text>
                                 <Text className="text-gray-500 text-xs mt-0.5">
                                     Learn more about WhichEmail
                                 </Text>

@@ -13,13 +13,13 @@ import {
 import {StatusBar} from 'expo-status-bar';
 import {router, useLocalSearchParams} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import * as LocalAuthentication from 'expo-local-authentication';
 import Button from '@/components/common/Button';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import {categories} from '@/constants/categories';
 import {useService, useUpdateService} from '@/services/queries/serviceQueries';
 import {secureStorage} from '@/services/secureStorage';
 import {showToast} from '@/utils/toast';
+import {authenticateUser} from "@/utils/authUtils";
 
 export default function EditService() {
     const {id} = useLocalSearchParams<{ id: string }>();
@@ -83,54 +83,24 @@ export default function EditService() {
         }
 
         setLoadingAuth(true);
-        try {
-            // Check biometric availability
-            const compatible = await LocalAuthentication.hasHardwareAsync();
-            const enrolled = await LocalAuthentication.isEnrolledAsync();
+        const result = await authenticateUser({
+            purpose: 'edit-password',
+            showSuccessToast: true,
+            successMessage: 'You can now edit the password',
+        });
 
-            if (!compatible || !enrolled) {
-                Alert.alert(
-                    'Biometric Not Available',
-                    'Please set up Face ID or Fingerprint to view/edit passwords.',
-                    [{text: 'OK'}]
-                );
-                setLoadingAuth(false);
-                return;
+        setLoadingAuth(false);
+
+        if (result.success) {
+            setPasswordAuthenticated(true);
+            if (existingPassword) {
+                setPassword(existingPassword);
             }
-
-            // Get biometric type
-            const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
-            let biometricType = 'biometric authentication';
-
-            if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
-                biometricType = 'Face ID';
-            } else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
-                biometricType = 'fingerprint';
-            }
-
-            // Authenticate
-            const result = await LocalAuthentication.authenticateAsync({
-                promptMessage: `Use ${biometricType} to edit password`,
-                fallbackLabel: 'Use passcode',
-                cancelLabel: 'Cancel',
-            });
-
-            if (result.success) {
-                setPasswordAuthenticated(true);
-                if (existingPassword) {
-                    setPassword(existingPassword);
-                }
-                setShowPassword(true);
-                showToast.success('Authenticated', 'You can now edit the password');
-            } else {
-                showToast.error('Authentication Failed', 'Please try again');
-            }
-        } catch (error) {
-            console.error('Authentication error:', error);
-            showToast.error('Error', 'Failed to authenticate');
-        } finally {
-            setLoadingAuth(false);
+            setShowPassword(true);
+        } else {
+            showToast.error('Authentication Failed', 'Please try again');
         }
+
     };
 
     const errors = useMemo(() => {

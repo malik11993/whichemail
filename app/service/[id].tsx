@@ -4,7 +4,6 @@ import {StatusBar} from 'expo-status-bar';
 import {Ionicons} from '@expo/vector-icons';
 import {router, useLocalSearchParams} from 'expo-router';
 import * as Clipboard from 'expo-clipboard';
-import * as LocalAuthentication from 'expo-local-authentication';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import EmptyState from '@/components/common/EmptyState';
 import {getCategoryById} from '@/constants/categories';
@@ -12,6 +11,7 @@ import {useDeleteService, useService} from '@/services/queries/serviceQueries';
 import {secureStorage} from '@/services/secureStorage';
 import {showToast} from '@/utils/toast';
 import ErrorScreen from "@/components/common/ErrorScreen";
+import {authenticateUser} from "@/utils/authUtils";
 
 export default function ServiceDetail() {
     const {id} = useLocalSearchParams<{ id: string }>();
@@ -46,50 +46,16 @@ export default function ServiceDetail() {
             setShowPassword(!showPassword);
             return;
         }
-
         setLoadingPassword(true);
-        try {
-            // Check if biometric is available
-            const compatible = await LocalAuthentication.hasHardwareAsync();
-            const enrolled = await LocalAuthentication.isEnrolledAsync();
 
-            if (!compatible || !enrolled) {
-                Alert.alert(
-                    'Biometric Not Available',
-                    'Please set up Face ID or Fingerprint to view passwords.',
-                    [{text: 'OK'}]
-                );
-                setLoadingPassword(false);
-                return;
-            }
+        const result = await authenticateUser({
+            purpose: 'view-password',
+        })
 
-            // Get biometric type for better UX
-            const types = await LocalAuthentication.supportedAuthenticationTypesAsync();
-            let biometricType = 'biometric authentication';
+        setLoadingPassword(false);
 
-            if (types.includes(LocalAuthentication.AuthenticationType.FACIAL_RECOGNITION)) {
-                biometricType = 'Face ID';
-            } else if (types.includes(LocalAuthentication.AuthenticationType.FINGERPRINT)) {
-                biometricType = 'fingerprint';
-            }
-
-            // Authenticate
-            const result = await LocalAuthentication.authenticateAsync({
-                promptMessage: `Use ${biometricType} to view password`,
-                fallbackLabel: 'Use passcode',
-                cancelLabel: 'Cancel',
-            });
-
-            if (result.success) {
-                setShowPassword(true);
-            } else {
-                showToast.error('Authentication Failed', 'Please try again');
-            }
-        } catch (error) {
-            console.error('Authentication error:', error);
-            showToast.error('Error', 'Failed to authenticate');
-        } finally {
-            setLoadingPassword(false);
+        if (result.success) {
+            setShowPassword(true);
         }
     };
 
@@ -105,24 +71,18 @@ export default function ServiceDetail() {
     const copyPasswordToClipboard = async () => {
         if (!password) return;
 
-        // Require authentication before copying password
-        try {
-            const result = await LocalAuthentication.authenticateAsync({
-                promptMessage: 'Authenticate to copy password',
-                fallbackLabel: 'Use passcode',
-            });
+        const result = await authenticateUser({
+            purpose: 'copy-password',
+        });
 
-            if (result.success) {
-                await Clipboard.setStringAsync(password);
-                showToast.success('Password Copied!', 'Will be cleared in 30 seconds');
+        if (result.success) {
+            await Clipboard.setStringAsync(password);
+            showToast.success('Password Copied!', 'Will be cleared in 30 seconds');
 
-                // Auto-clear clipboard after 30 seconds
-                setTimeout(async () => {
-                    await Clipboard.setStringAsync('');
-                }, 30000);
-            }
-        } catch (error) {
-            showToast.error('Copy Failed', 'Authentication required');
+            // Auto-clear clipboard after 30 seconds
+            setTimeout(async () => {
+                await Clipboard.setStringAsync('');
+            }, 30000);
         }
     };
 

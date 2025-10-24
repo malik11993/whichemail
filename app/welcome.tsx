@@ -38,7 +38,7 @@ export default function Welcome() {
                     </Text>
 
                     {/* Feature Cards */}
-                    <View className="w-full space-y-4 mb-8">
+                    <View className="w-full space-y-4 mb-8 gap-y-3">
                         <FeatureCard
                             icon="checkmark-circle"
                             title="Track Your Emails"
@@ -49,6 +49,12 @@ export default function Welcome() {
                             icon="search"
                             title="Quick Search"
                             description="Instantly find which email you used for any website or app"
+                        />
+
+                        <FeatureCard
+                            icon="sparkles"
+                            title="WhichEmail AI Assistant"
+                            description="Find emails using natural language, recover forgotten accounts and many more with WhichEmail AI Assistant"
                         />
 
                         <FeatureCard
@@ -73,7 +79,7 @@ export default function Welcome() {
                             Fanyi Charllson
                         </Text>
                         <Text className="text-white/80 text-sm text-center leading-5">
-                            Built to solve a real problem: forgetting which email I used for different services.
+                            Built to solve a real problem: Forgetting which email I used for different services.
                             Now you'll never have to worry about it again!
                         </Text>
                     </View>
