@@ -1,18 +1,25 @@
-import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {ColorValue, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {router} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
 import {StatusBar} from 'expo-status-bar';
 import {LinearGradient} from 'expo-linear-gradient';
 import {FeatureCard} from "@/components/featureCard";
+import {useTheme} from '@/components/ThemeProvider';
 
 export default function Welcome() {
+    const {actualTheme} = useTheme();
     const handleGetStarted = () => {
         router.push('/(auth)/register');
     };
 
+    const gradientColors = actualTheme === 'dark'
+        ? ['#1e293b', '#0f172a', '#020617'] // slate-800, slate-900, slate-950
+        : ['#3b82f6', '#1e40af', '#1e3a8a']; // blue-500, blue-800, blue-900
+
+
     return (
         <LinearGradient
-            colors={['#3b82f6', '#1e40af', '#1e3a8a']}
+            colors={gradientColors as [ColorValue, ColorValue, ...ColorValue[]]}
             className="flex-1"
         >
             <StatusBar style="light"/>
@@ -33,7 +40,7 @@ export default function Welcome() {
                         WhichEmail
                     </Text>
 
-                    <Text className="text-blue-100 text-lg text-center mb-12 px-4">
+                    <Text className="text-blue-100 dark:text-slate-300 text-lg text-center mb-12 px-4">
                         Never forget which email you used where
                     </Text>
 
@@ -87,14 +94,20 @@ export default function Welcome() {
                     {/* Get Started Button */}
                     <TouchableOpacity
                         onPress={handleGetStarted}
-                        className="bg-white rounded-full py-5 px-8 shadow-2xl active:scale-95 mb-4"
+                        className="bg-white dark:bg-blue-500 rounded-full py-5 px-8 shadow-2xl active:scale-95 mb-4"
                         activeOpacity={0.9}
                     >
                         <View className="flex-row items-center justify-center">
-                            <Text className="text-blue-600 text-center text-lg font-bold mr-2">
+                            <Text className={`text-center text-lg font-bold mr-2 ${
+                                actualTheme === 'dark' ? 'text-white' : 'text-blue-600'
+                            }`}>
                                 Get Started
                             </Text>
-                            <Ionicons name="arrow-forward" size={20} color="#2563eb"/>
+                            <Ionicons
+                                name="arrow-forward"
+                                size={20}
+                                color={actualTheme === 'dark' ? '#ffffff' : '#2563eb'}
+                            />
                         </View>
                     </TouchableOpacity>
 

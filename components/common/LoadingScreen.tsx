@@ -1,13 +1,20 @@
 import {ActivityIndicator, Text, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
+import {StatusBar} from "expo-status-bar";
+import React from "react";
+import {useTheme} from "@/components/ThemeProvider";
 
 interface LoadingScreenProps {
     message?: string;
 }
 
 export default function LoadingScreen({message = 'Loading...'}: LoadingScreenProps) {
+    const {actualTheme} = useTheme();
+
     return (
-        <View className="flex-1 bg-gradient-to-b from-blue-50 to-white items-center justify-center px-6">
+        <View
+            className="flex-1 bg-gradient-to-b from-blue-50 to-slate-100 dark:bg-slate-900 items-center justify-center px-6">
+            <StatusBar style={actualTheme === 'dark' ? 'light' : 'dark'}/>
             {/* Loading Container */}
             <View className="items-center">
                 {/* Animated Circle Background */}
@@ -23,10 +30,10 @@ export default function LoadingScreen({message = 'Loading...'}: LoadingScreenPro
                 </View>
 
                 {/* Message Text */}
-                <Text className="text-gray-900 font-bold text-xl mb-2">
+                <Text className="text-slate-900 dark:text-slate-100 font-bold text-xl mb-2">
                     {message}
                 </Text>
-                <Text className="text-gray-500 text-center text-sm">
+                <Text className="text-gray-500 dark:text-slate-100 text-center text-sm">
                     This will only take a moment
                 </Text>
 

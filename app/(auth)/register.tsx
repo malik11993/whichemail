@@ -7,9 +7,11 @@ import Input from "@/components/forms/Input";
 import Button from "@/components/common/Button";
 import {showToast} from "@/utils/toast";
 import {useRegister} from "@/services/hooks/useAuth";
+import {useTheme} from "@/components/ThemeProvider";
 
 export default function Register() {
     const [name, setName] = useState('');
+    const {actualTheme} = useTheme();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -85,9 +87,9 @@ export default function Register() {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            className="flex-1 bg-white"
+            className="flex-1 bg-white dark:bg-slate-900"
         >
-            <StatusBar style="dark"/>
+            <StatusBar style={actualTheme === 'dark' ? 'light' : 'dark'}/>
             <ScrollView
                 contentContainerStyle={{flexGrow: 1}}
                 keyboardShouldPersistTaps="handled"
@@ -96,16 +98,20 @@ export default function Register() {
                 <View className="px-6 pt-16 pb-8">
                     <TouchableOpacity
                         onPress={() => router.back()}
-                        className="w-10 h-10 items-center justify-center bg-gray-100 rounded-full mb-6"
+                        className="w-10 h-10 items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full mb-6"
                     >
-                        <Ionicons name="arrow-back" size={24} color="#374151"/>
+                        <Ionicons
+                            name="arrow-back"
+                            size={24}
+                            color={actualTheme === 'dark' ? '#f1f5f9' : '#374151'}
+                        />
                     </TouchableOpacity>
 
                     <View className="mb-2">
-                        <Text className="text-4xl font-bold text-gray-900 mb-2">
+                        <Text className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                             Create Account 🚀
                         </Text>
-                        <Text className="text-gray-600 text-base">
+                        <Text className="text-slate-600 dark:text-slate-400 text-base">
                             Sign up to start tracking your emails
                         </Text>
                     </View>
@@ -167,13 +173,21 @@ export default function Register() {
 
                     {/* Terms and Conditions */}
                     <View className="flex-row items-start mb-6">
-                        <Ionicons name="information-circle" size={16} color="#6b7280"
-                                  style={{marginTop: 2, marginRight: 6}}/>
-                        <Text className="flex-1 text-gray-600 text-sm">
+                        <Ionicons
+                            name="information-circle"
+                            size={16}
+                            color={actualTheme === 'dark' ? '#64748b' : '#6b7280'}
+                            style={{marginTop: 2, marginRight: 6}}
+                        />
+                        <Text className="flex-1 text-slate-600 dark:text-slate-400 text-sm">
                             By signing up, you agree to our{' '}
-                            <Text className="text-blue-600 font-semibold">Terms of Service</Text>
+                            <Text className="text-blue-600 dark:text-blue-400 font-semibold">
+                                Terms of Service
+                            </Text>
                             {' '}and{' '}
-                            <Text className="text-blue-600 font-semibold">Privacy Policy</Text>
+                            <Text className="text-blue-600 dark:text-blue-400 font-semibold">
+                                Privacy Policy
+                            </Text>
                         </Text>
                     </View>
 
@@ -185,18 +199,18 @@ export default function Register() {
 
                     {/* Divider */}
                     <View className="flex-row items-center my-6">
-                        <View className="flex-1 h-px bg-gray-300"/>
-                        <Text className="mx-4 text-gray-500">or</Text>
-                        <View className="flex-1 h-px bg-gray-300"/>
+                        <View className="flex-1 h-px bg-slate-300 dark:bg-slate-700"/>
+                        <Text className="mx-4 text-slate-500 dark:text-slate-400">or</Text>
+                        <View className="flex-1 h-px bg-slate-300 dark:bg-slate-700"/>
                     </View>
 
-                    {/* Social Sign Up (Optional for future) */}
+                    {/* Social Sign Up */}
                     <TouchableOpacity
-                        className="flex-row items-center justify-center bg-white border-2 border-gray-200 rounded-xl py-4 mb-6"
-                        onPress={() =>  showToast.info("Currently under dev mode!", "Please sign up with your credentials")}
+                        className="flex-row items-center justify-center bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl py-4 mb-6"
+                        onPress={() => showToast.info("Currently under dev mode!", "Please sign up with your credentials")}
                     >
                         <Ionicons name="logo-google" size={20} color="#4285F4"/>
-                        <Text className="ml-2 font-semibold text-gray-700">
+                        <Text className="ml-2 font-semibold text-slate-700 dark:text-slate-300">
                             Sign up with Google
                         </Text>
                     </TouchableOpacity>
@@ -205,9 +219,13 @@ export default function Register() {
                 {/* Footer */}
                 <View className="px-6 mb-8">
                     <View className="flex-row items-center justify-center">
-                        <Text className="text-gray-600">Already have an account? </Text>
+                        <Text className="text-slate-600 dark:text-slate-400">
+                            Already have an account?{' '}
+                        </Text>
                         <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-                            <Text className="text-blue-600 font-bold">Sign In</Text>
+                            <Text className="text-blue-600 dark:text-blue-400 font-bold">
+                                Sign In
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>

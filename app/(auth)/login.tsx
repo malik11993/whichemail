@@ -7,6 +7,7 @@ import Input from "@/components/forms/Input";
 import Button from "@/components/common/Button";
 import {showToast} from "@/utils/toast";
 import {useLogin} from "@/services/hooks/useAuth";
+import {useTheme} from "@/components/ThemeProvider";
 
 
 export default function Login() {
@@ -14,6 +15,7 @@ export default function Login() {
     const [password, setPassword] = useState('');
     const [errors, setErrors] = useState({email: '', password: ''});
     const {mutate: loginUser, isPending} = useLogin();
+    const {actualTheme} = useTheme();
 
     const validateForm = () => {
         let valid = true;
@@ -63,9 +65,9 @@ export default function Login() {
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            className="flex-1 bg-white"
+            className="flex-1 bg-white dark:bg-slate-900"
         >
-            <StatusBar style="dark"/>
+            <StatusBar style={actualTheme === 'dark' ? 'light' : 'dark'}/>
             <ScrollView
                 contentContainerStyle={{flexGrow: 1}}
                 keyboardShouldPersistTaps="handled"
@@ -74,16 +76,20 @@ export default function Login() {
                 <View className="px-6 pt-16 pb-8">
                     <TouchableOpacity
                         onPress={() => router.back()}
-                        className="w-10 h-10 items-center justify-center bg-gray-100 rounded-full mb-6"
+                        className="w-10 h-10 items-center justify-center bg-slate-100 dark:bg-slate-800 rounded-full mb-6"
                     >
-                        <Ionicons name="arrow-back" size={24} color="#374151"/>
+                        <Ionicons
+                            name="arrow-back"
+                            size={24}
+                            color={actualTheme === 'dark' ? '#f1f5f9' : '#374151'}
+                        />
                     </TouchableOpacity>
 
                     <View className="mb-2">
-                        <Text className="text-4xl font-bold text-gray-900 mb-2">
+                        <Text className="text-4xl font-bold text-slate-900 dark:text-slate-100 mb-2">
                             Welcome Back! 👋
                         </Text>
-                        <Text className="text-gray-600 text-base">
+                        <Text className="text-slate-600 dark:text-slate-400 text-base">
                             Sign in to continue managing your emails
                         </Text>
                     </View>
@@ -117,10 +123,11 @@ export default function Login() {
                         error={errors.password}
                     />
 
-                    <TouchableOpacity className="mb-6"
-                                      onPress={() => showToast.info("Coming Soon!")}
+                    <TouchableOpacity
+                        className="mb-6"
+                        onPress={() => showToast.info("Coming Soon!")}
                     >
-                        <Text className="text-blue-600 font-semibold text-right">
+                        <Text className="text-blue-600 dark:text-blue-400 font-semibold text-right">
                             Forgot Password?
                         </Text>
                     </TouchableOpacity>
@@ -133,18 +140,18 @@ export default function Login() {
 
                     {/* Divider */}
                     <View className="flex-row items-center my-6">
-                        <View className="flex-1 h-px bg-gray-300"/>
-                        <Text className="mx-4 text-gray-500">or</Text>
-                        <View className="flex-1 h-px bg-gray-300"/>
+                        <View className="flex-1 h-px bg-slate-300 dark:bg-slate-700"/>
+                        <Text className="mx-4 text-slate-500 dark:text-slate-400">or</Text>
+                        <View className="flex-1 h-px bg-slate-300 dark:bg-slate-700"/>
                     </View>
 
-                    {/* Social Login (Optional for future) */}
+                    {/* Social Login */}
                     <TouchableOpacity
-                        className="flex-row items-center justify-center bg-white border-2 border-gray-200 rounded-xl py-4 mb-6"
+                        className="flex-row items-center justify-center bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl py-4 mb-6"
                         onPress={() => showToast.info("Currently under dev mode!", "Please login with your credentials")}
                     >
                         <Ionicons name="logo-google" size={20} color="#4285F4"/>
-                        <Text className="ml-2 font-semibold text-gray-700">
+                        <Text className="ml-2 font-semibold text-slate-700 dark:text-slate-300">
                             Continue with Google
                         </Text>
                     </TouchableOpacity>
@@ -153,9 +160,13 @@ export default function Login() {
                 {/* Footer */}
                 <View className="px-6 pb-12">
                     <View className="flex-row items-center justify-center">
-                        <Text className="text-gray-600">Don't have an account? </Text>
+                        <Text className="text-slate-600 dark:text-slate-400">
+                            Don't have an account?{' '}
+                        </Text>
                         <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-                            <Text className="text-blue-600 font-bold">Sign Up</Text>
+                            <Text className="text-blue-600 dark:text-blue-400 font-bold">
+                                Sign Up
+                            </Text>
                         </TouchableOpacity>
                     </View>
                 </View>

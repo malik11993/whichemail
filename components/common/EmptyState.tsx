@@ -19,13 +19,13 @@ export default function EmptyState({
                                    }: EmptyStateProps) {
     return (
         <View className="flex-1 items-center justify-center px-8 py-12">
-            <View className="bg-blue-50 rounded-full p-6 mb-4">
+            <View className="bg-blue-50 dark:bg-slate-700 rounded-full p-6 mb-4">
                 <Ionicons name={icon} size={48} color="#3b82f6"/>
             </View>
-            <Text className="text-gray-900 font-bold text-xl text-center mb-2">
+            <Text className="text-slate-900 dark:text-slate-100 font-bold text-xl text-center mb-2">
                 {title}
             </Text>
-            <Text className="text-gray-500 text-center mb-6">
+            <Text className="text-gray-500 dark:text-slate-200 text-center mb-6">
                 {message}
             </Text>
             {actionLabel && onAction && (

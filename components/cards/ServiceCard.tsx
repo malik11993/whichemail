@@ -2,6 +2,7 @@ import {Text, TouchableOpacity, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {router} from 'expo-router';
 import {getCategoryById} from '@/constants/categories';
+import {useTheme} from '@/components/ThemeProvider';
 
 interface ServiceCardProps {
     service: Service;
@@ -9,11 +10,12 @@ interface ServiceCardProps {
 
 export default function ServiceCard({service}: ServiceCardProps) {
     const category = getCategoryById(service.categoryId);
+    const { actualTheme } = useTheme();
 
     return (
         <TouchableOpacity
             onPress={() => router.push(`/service/${service.id}`)}
-            className="bg-white rounded-2xl p-4 mb-3 shadow-sm border border-gray-100 active:scale-98"
+            className="bg-white dark:bg-slate-800 rounded-2xl p-4 mb-3 shadow-sm border border-slate-200 dark:border-slate-700 active:scale-98"
             activeOpacity={0.7}
         >
             <View className="flex-row items-center">
@@ -27,10 +29,10 @@ export default function ServiceCard({service}: ServiceCardProps) {
 
                 {/* Service Info */}
                 <View className="flex-1">
-                    <Text className="text-gray-900 font-bold text-base mb-1">
+                    <Text className="text-slate-900 dark:text-slate-100 font-bold text-base mb-1">
                         {service.serviceName}
                     </Text>
-                    <Text className="text-gray-500 text-sm" numberOfLines={1}>
+                    <Text className="text-slate-500 dark:text-slate-400 text-sm" numberOfLines={1}>
                         {service.email}
                     </Text>
                 </View>
@@ -38,18 +40,18 @@ export default function ServiceCard({service}: ServiceCardProps) {
                 {/* Password Indicator & Arrow */}
                 <View className="flex-row items-center">
                     {service.hasPassword && (
-                        <View className="bg-blue-100 rounded-full p-1.5 mr-2">
+                        <View className="bg-blue-100 dark:bg-blue-200/20 rounded-full p-1.5 mr-2">
                             <Ionicons name="lock-closed" size={14} color="#3b82f6"/>
                         </View>
                     )}
-                    <Ionicons name="chevron-forward" size={20} color="#9ca3af"/>
+                    <Ionicons name="chevron-forward" size={20} color={actualTheme === 'dark' ? '#94a3b8' : '#9ca3af'}/>
                 </View>
             </View>
 
             {/* Notes Preview */}
             {service.notes && (
-                <View className="mt-3 pt-3 border-t border-gray-100">
-                    <Text className="text-gray-600 text-xs" numberOfLines={1}>
+                <View className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+                    <Text className="text-slate-600 dark:text-slate-400 text-xs" numberOfLines={1}>
                         {service.notes}
                     </Text>
                 </View>

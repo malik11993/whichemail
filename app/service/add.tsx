@@ -12,10 +12,10 @@ import {
 import {StatusBar} from 'expo-status-bar';
 import {router} from 'expo-router';
 import {Ionicons} from '@expo/vector-icons';
-import Button from '@/components/common/Button';
 import {categories} from '@/constants/categories';
 import {useCreateService} from '@/services/queries/serviceQueries';
 import {secureStorage} from "@/services/secureStorage";
+import {useTheme} from "@/components/ThemeProvider";
 
 export default function AddService() {
     const [serviceName, setServiceName] = useState('');
@@ -24,6 +24,7 @@ export default function AddService() {
     const [notes, setNotes] = useState('');
     const [hasPassword, setHasPassword] = useState(true);
     const [categoryId, setCategoryId] = useState<string | null>(null);
+    const { actualTheme } = useTheme();
 
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -73,67 +74,83 @@ export default function AddService() {
     };
 
     return (
-        <View className="flex-1 bg-gray-50">
-            <StatusBar style="dark"/>
+        <View className="flex-1 bg-slate-50 dark:bg-slate-900">
+            <StatusBar style={actualTheme === 'dark' ? 'light' : 'dark'}/>
 
             {/* Header */}
-            <View className="bg-white pt-14 pb-4 px-6 border-b border-gray-100">
+            <View
+                className="bg-white dark:bg-slate-800 pt-14 pb-4 px-6 border-b border-slate-200 dark:border-slate-700">
                 <View className="flex-row items-center justify-between">
                     <TouchableOpacity
                         onPress={() => router.back()}
-                        className="w-10 h-10 rounded-full items-center justify-center bg-gray-100 active:bg-gray-200"
+                        className="w-10 h-10 rounded-full items-center justify-center bg-slate-100 dark:bg-slate-700 active:bg-slate-200 dark:active:bg-slate-600"
                         accessibilityLabel="Go back"
                     >
-                        <Ionicons name="chevron-back" size={22} color="#111827"/>
+                        <Ionicons
+                            name="chevron-back"
+                            size={22}
+                            color={actualTheme === 'dark' ? '#f1f5f9' : '#111827'}
+                        />
                     </TouchableOpacity>
-                    <Text className="text-gray-900 font-bold text-xl">Add Service</Text>
+                    <Text className="text-slate-900 dark:text-slate-100 font-bold text-xl">Add Service</Text>
                     <View className="w-10"/>
                 </View>
             </View>
 
             <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                 className="flex-1"
+                keyboardVerticalOffset={100}
             >
                 <ScrollView className="flex-1 px-6 pt-4" showsVerticalScrollIndicator={false}>
                     {/* Service Name */}
                     <View className="mb-4">
-                        <Text className="text-gray-700 font-semibold mb-2">Service Name</Text>
+                        <Text className="text-slate-700 dark:text-slate-300 font-semibold mb-2">
+                            Service Name
+                        </Text>
                         <TextInput
                             value={serviceName}
                             onChangeText={setServiceName}
                             placeholder="e.g., Netflix"
-                            placeholderTextColor="#9ca3af"
-                            className="bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
+                            placeholderTextColor={actualTheme === 'dark' ? '#64748b' : '#9ca3af'}
+                            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100"
                             autoCapitalize="words"
                             returnKeyType="next"
                         />
                         {errors.serviceName ? (
-                            <Text className="text-red-500 text-xs mt-1">{errors.serviceName}</Text>
+                            <Text className="text-red-500 dark:text-red-400 text-xs mt-1">
+                                {errors.serviceName}
+                            </Text>
                         ) : null}
                     </View>
 
                     {/* Email */}
                     <View className="mb-4">
-                        <Text className="text-gray-700 font-semibold mb-2">Email</Text>
+                        <Text className="text-slate-700 dark:text-slate-300 font-semibold mb-2">
+                            Email
+                        </Text>
                         <TextInput
                             value={email}
                             onChangeText={setEmail}
                             placeholder="e.g., you@example.com"
-                            placeholderTextColor="#9ca3af"
-                            className="bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
+                            placeholderTextColor={actualTheme === 'dark' ? '#64748b' : '#9ca3af'}
+                            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100"
                             autoCapitalize="none"
                             keyboardType="email-address"
                             returnKeyType="next"
                         />
                         {errors.email ? (
-                            <Text className="text-red-500 text-xs mt-1">{errors.email}</Text>
+                            <Text className="text-red-500 dark:text-red-400 text-xs mt-1">
+                                {errors.email}
+                            </Text>
                         ) : null}
                     </View>
 
                     {/* Category */}
                     <View className="mb-6">
-                        <Text className="text-gray-700 font-semibold mb-2">Category</Text>
+                        <Text className="text-slate-700 dark:text-slate-300 font-semibold mb-2">
+                            Category
+                        </Text>
                         <ScrollView
                             horizontal
                             showsHorizontalScrollIndicator={false}
@@ -145,15 +162,24 @@ export default function AddService() {
                                     <TouchableOpacity
                                         key={cat.id}
                                         onPress={() => setCategoryId(cat.id)}
-                                        className={`mx-2 mb-2 px-4 py-2 rounded-full flex-row items-center ${selected ? 'bg-blue-600' : 'bg-gray-100'}`}
+                                        className={`mx-2 mb-2 px-4 py-2 rounded-full flex-row items-center ${
+                                            selected
+                                                ? 'bg-blue-600 dark:bg-blue-500'
+                                                : 'bg-slate-100 dark:bg-slate-700'
+                                        }`}
                                     >
                                         <Ionicons
                                             name={cat.icon as any}
                                             size={16}
-                                            color={selected ? 'white' : '#374151'}
+                                            color={selected ? 'white' : (actualTheme === 'dark' ? '#cbd5e1' : '#374151')}
                                         />
                                         <Text
-                                            className={`ml-1 font-semibold ${selected ? 'text-white' : 'text-gray-700'}`}>
+                                            className={`ml-1 font-semibold ${
+                                                selected
+                                                    ? 'text-white'
+                                                    : 'text-slate-700 dark:text-slate-300'
+                                            }`}
+                                        >
                                             {cat.name}
                                         </Text>
                                     </TouchableOpacity>
@@ -161,19 +187,23 @@ export default function AddService() {
                             })}
                         </ScrollView>
                         {errors.categoryId ? (
-                            <Text className="text-red-500 text-xs mt-1">{errors.categoryId}</Text>
+                            <Text className="text-red-500 dark:text-red-400 text-xs mt-1">
+                                {errors.categoryId}
+                            </Text>
                         ) : null}
                     </View>
 
                     {/* Website */}
                     <View className="mb-4">
-                        <Text className="text-gray-700 font-semibold mb-2">Website (optional)</Text>
+                        <Text className="text-slate-700 dark:text-slate-300 font-semibold mb-2">
+                            Website (optional)
+                        </Text>
                         <TextInput
                             value={website}
                             onChangeText={setWebsite}
                             placeholder="e.g., netflix.com"
-                            placeholderTextColor="#9ca3af"
-                            className="bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
+                            placeholderTextColor={actualTheme === 'dark' ? '#64748b' : '#9ca3af'}
+                            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100"
                             autoCapitalize="none"
                             keyboardType="url"
                             returnKeyType="next"
@@ -182,45 +212,62 @@ export default function AddService() {
 
                     {/* Notes */}
                     <View className="mb-4">
-                        <Text className="text-gray-700 font-semibold mb-2">Notes (optional)</Text>
+                        <Text className="text-slate-700 dark:text-slate-300 font-semibold mb-2">
+                            Notes (optional)
+                        </Text>
                         <TextInput
                             value={notes}
                             onChangeText={setNotes}
                             placeholder="Add any details..."
-                            placeholderTextColor="#9ca3af"
-                            className="bg-white border border-gray-200 rounded-xl px-4 py-3 text-gray-900"
+                            placeholderTextColor={actualTheme === 'dark' ? '#64748b' : '#9ca3af'}
+                            className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-slate-900 dark:text-slate-100"
                             multiline
                             numberOfLines={4}
                             textAlignVertical="top"
                         />
                     </View>
 
-                    {/* Has Password */}
+                    {/* Has Password Toggle */}
                     <View
-                        className="mb-6 bg-white border border-gray-200 rounded-xl px-4 py-3 flex-row items-center justify-between">
+                        className="mb-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 flex-row items-center justify-between">
                         <View>
-                            <Text className="text-gray-900 font-semibold">Has Password</Text>
-                            <Text className="text-gray-500 text-xs">Track if this service has a saved password</Text>
+                            <Text className="text-slate-900 dark:text-slate-100 font-semibold">
+                                Has Password
+                            </Text>
+                            <Text className="text-slate-500 dark:text-slate-400 text-xs">
+                                Track if this service has a saved password
+                            </Text>
                         </View>
-                        <Switch value={hasPassword} onValueChange={setHasPassword}/>
+                        <Switch
+                            value={hasPassword}
+                            onValueChange={setHasPassword}
+                            trackColor={{false: '#cbd5e1', true: '#3b82f6'}}
+                            thumbColor={hasPassword ? '#ffffff' : '#f1f5f9'}
+                        />
                     </View>
+
                     {/* Password Field - Only show if feature is enabled */}
                     {hasPassword && (
                         <View className="mb-6">
                             {passwordFeatureEnabled ? (
                                 <>
-                                    <Text className="text-gray-700 font-semibold mb-2">
+                                    <Text className="text-slate-700 dark:text-slate-300 font-semibold mb-2">
                                         Password (optional)
                                     </Text>
                                     <View
-                                        className="bg-white border border-gray-200 rounded-xl px-4 py-3 flex-row items-center">
-                                        <Ionicons name="lock-closed" size={20} color="#9ca3af" className="mr-3"/>
+                                        className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 flex-row items-center">
+                                        <Ionicons
+                                            name="lock-closed"
+                                            size={20}
+                                            color={actualTheme === 'dark' ? '#64748b' : '#9ca3af'}
+                                            style={{marginRight: 12}}
+                                        />
                                         <TextInput
                                             value={password}
                                             onChangeText={setPassword}
                                             placeholder="Enter password to save securely"
-                                            placeholderTextColor="#9ca3af"
-                                            className="flex-1 text-gray-900"
+                                            placeholderTextColor={actualTheme === 'dark' ? '#64748b' : '#9ca3af'}
+                                            className="flex-1 text-slate-900 dark:text-slate-100"
                                             secureTextEntry={!showPassword}
                                             autoCapitalize="none"
                                         />
@@ -228,34 +275,43 @@ export default function AddService() {
                                             <Ionicons
                                                 name={showPassword ? 'eye-off' : 'eye'}
                                                 size={20}
-                                                color="#9ca3af"
+                                                color={actualTheme === 'dark' ? '#64748b' : '#9ca3af'}
                                             />
                                         </TouchableOpacity>
                                     </View>
                                     <View className="flex-row items-start mt-2">
-                                        <Ionicons name="shield-checkmark" size={14} color="#10b981"
-                                                  style={{marginTop: 2, marginRight: 4}}/>
-                                        <Text className="text-green-600 text-xs flex-1">
+                                        <Ionicons
+                                            name="shield-checkmark"
+                                            size={14}
+                                            color="#10b981"
+                                            style={{marginTop: 2, marginRight: 4}}
+                                        />
+                                        <Text className="text-green-600 dark:text-green-500 text-xs flex-1">
                                             Password will be encrypted and stored securely on your device
                                         </Text>
                                     </View>
                                 </>
                             ) : (
-                                <View className="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                <View
+                                    className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
                                     <View className="flex-row items-start">
-                                        <Ionicons name="information-circle" size={20} color="#3b82f6"
-                                                  style={{marginRight: 8}}/>
+                                        <Ionicons
+                                            name="information-circle"
+                                            size={20}
+                                            color="#3b82f6"
+                                            style={{marginRight: 8}}
+                                        />
                                         <View className="flex-1">
-                                            <Text className="text-blue-900 font-semibold mb-1">
+                                            <Text className="text-blue-900 dark:text-blue-100 font-semibold mb-1">
                                                 Password Storage Disabled
                                             </Text>
-                                            <Text className="text-blue-700 text-sm mb-3">
+                                            <Text className="text-blue-700 dark:text-blue-300 text-sm mb-3">
                                                 Enable password storage in Settings to save passwords securely with
                                                 biometric protection.
                                             </Text>
                                             <TouchableOpacity
                                                 onPress={() => router.push('/(tabs)/settings')}
-                                                className="bg-blue-600 px-4 py-2 rounded-full self-start"
+                                                className="bg-blue-600 dark:bg-blue-500 px-4 py-2 rounded-full self-start"
                                             >
                                                 <Text className="text-white font-semibold text-sm">
                                                     Go to Settings
@@ -269,11 +325,32 @@ export default function AddService() {
                     )}
 
                     {/* Actions */}
-                    <View className="mt-2 mb-8 text-white">
-                        <Button title={isPending ? 'Saving...' : 'Save Service'} onPress={handleSubmit}
-                                loading={isPending} disabled={!canSubmit}/>
+                    <View className="mt-2 mb-8">
+                        <TouchableOpacity
+                            onPress={handleSubmit}
+                            disabled={!canSubmit || isPending}
+                            className={`rounded-xl py-4 items-center ${
+                                !canSubmit || isPending
+                                    ? 'bg-slate-300 dark:bg-slate-700'
+                                    : 'bg-blue-600 dark:bg-blue-500'
+                            }`}
+                        >
+                            <Text className="text-white font-semibold text-base">
+                                {isPending ? 'Saving...' : 'Save Service'}
+                            </Text>
+                        </TouchableOpacity>
+
                         <View className="h-3"/>
-                        <Button title="Cancel" onPress={() => router.back()} variant="outline" disabled={isPending}/>
+
+                        <TouchableOpacity
+                            onPress={() => router.back()}
+                            disabled={isPending}
+                            className="border border-slate-300 dark:border-slate-600 rounded-xl py-4 items-center"
+                        >
+                            <Text className="text-slate-700 dark:text-slate-300 font-semibold text-base">
+                                Cancel
+                            </Text>
+                        </TouchableOpacity>
                     </View>
                 </ScrollView>
             </KeyboardAvoidingView>

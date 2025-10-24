@@ -9,6 +9,7 @@ import { useState } from 'react';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import { useTheme } from '@/components/ThemeProvider';
 import LoadingScreen from "@/components/common/LoadingScreen";
 import SearchBar from "@/components/common/SearchBar";
 import {useServices} from "@/services/queries/serviceQueries";
@@ -18,6 +19,7 @@ import {categories} from "@/constants/categories";
 
 
 export default function Services() {
+    const { actualTheme } = useTheme();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const { data: services, isLoading, refetch, isFetching } = useServices();
@@ -36,13 +38,13 @@ export default function Services() {
     }
 
     return (
-        <View className="flex-1 bg-gray-50">
+        <View className="flex-1 bg-slate-50 dark:bg-slate-900">
             <StatusBar style="dark" />
 
             {/* Header */}
-            <View className="bg-white pt-14 pb-4 px-6 border-b border-gray-100">
+            <View className="bg-white dark:bg-slate-800 pt-14 pb-4 px-6 border-b border-slate-200 dark:border-slate-700">
                 <View className="flex-row items-center justify-between mb-4">
-                    <Text className="text-gray-900 font-bold text-2xl">All Services</Text>
+                    <Text className="text-slate-900 dark:text-slate-100 font-bold text-2xl">All Services</Text>
                     <TouchableOpacity
                         onPress={() => router.push('/service/add')}
                         className="bg-blue-600 px-4 py-2 rounded-full flex-row items-center"
@@ -64,12 +66,12 @@ export default function Services() {
                     <TouchableOpacity
                         onPress={() => setSelectedCategory(null)}
                         className={`px-4 py-2 rounded-full mr-2 ${
-                            selectedCategory === null ? 'bg-blue-600' : 'bg-gray-100'
+                            selectedCategory === null ? 'bg-blue-600' : 'bg-slate-100 dark:bg-slate-700'
                         }`}
                     >
                         <Text
                             className={`font-semibold ${
-                                selectedCategory === null ? 'text-white' : 'text-gray-700'
+                                selectedCategory === null ? 'text-white' : 'text-slate-700 dark:text-slate-200'
                             }`}
                         >
                             All
@@ -80,17 +82,17 @@ export default function Services() {
                             key={category.id}
                             onPress={() => setSelectedCategory(category.id)}
                             className={`px-4 py-2 rounded-full mr-2 flex-row items-center ${
-                                selectedCategory === category.id ? 'bg-blue-600' : 'bg-gray-100'
+                                selectedCategory === category.id ? 'bg-blue-600' : 'bg-slate-100 dark:bg-slate-700'
                             }`}
                         >
                             <Ionicons
                                 name={category.icon as any}
                                 size={16}
-                                color={selectedCategory === category.id ? 'white' : '#374151'}
+                                color={selectedCategory === category.id ? 'white' : (actualTheme === 'dark' ? '#cbd5e1' : '#374151')}
                             />
                             <Text
                                 className={`font-semibold ml-1 ${
-                                    selectedCategory === category.id ? 'text-white' : 'text-gray-700'
+                                    selectedCategory === category.id ? 'text-white' : 'text-slate-700 dark:text-slate-200'
                                 }`}
                             >
                                 {category.name}
@@ -114,7 +116,7 @@ export default function Services() {
             >
                 {filteredServices && filteredServices.length > 0 ? (
                     <>
-                        <Text className="text-gray-500 text-sm mb-4">
+                        <Text className="text-slate-500 dark:text-slate-400 text-sm mb-4">
                             {filteredServices.length} service{filteredServices.length !== 1 ? 's' : ''} found
                         </Text>
                         {filteredServices.map(service => (

@@ -5,6 +5,7 @@ import {useCreateService} from "@/services/queries/serviceQueries";
 import {ClipboardDetection} from "@/hooks/useClipboardMonitor";
 import {showToast} from "@/utils/toast";
 import {router} from "expo-router";
+import {useTheme} from "@/components/ThemeProvider";
 
 interface ClipboardPromptProps {
     detection: ClipboardDetection | null;
@@ -20,6 +21,7 @@ export const ClipboardPrompt: React.FC<ClipboardPromptProps> = ({
     const [serviceName, setServiceName] = useState("");
     const [showFullForm, setShowFullForm] = useState(false);
     const createService = useCreateService();
+    const {actualTheme} = useTheme();
 
     const handleAuthRequired = () => {
         showToast.error("Login Required", "Please login first to save your emails 🔐");
@@ -90,26 +92,28 @@ export const ClipboardPrompt: React.FC<ClipboardPromptProps> = ({
             onRequestClose={onDismiss}
         >
             <View className="flex-1 justify-end bg-black/50">
-                <View className="bg-white rounded-t-3xl p-6 pb-10">
+                <View className="bg-white dark:bg-slate-800 rounded-t-3xl p-6 pb-10">
                     {/* Header */}
                     <View className="flex-row items-center justify-between mb-4">
                         <View className="flex-row items-center gap-2">
-                            <View className="bg-blue-500 w-10 h-10 rounded-full items-center justify-center">
+                            <View
+                                className="bg-blue-500 dark:bg-blue-600 w-10 h-10 rounded-full items-center justify-center">
                                 <Ionicons name="mail" size={20} color="#fff"/>
                             </View>
-                            <Text className="text-lg font-bold text-slate-800">
+                            <Text className="text-lg font-bold text-slate-800 dark:text-slate-100">
                                 Email Detected! 📧
                             </Text>
                         </View>
                         <TouchableOpacity onPress={onDismiss}>
-                            <Ionicons name="close" size={24} color="#64748b"/>
+                            <Ionicons name="close" size={24} color={actualTheme === 'dark' ? '#94a3b8' : '#64748b'}/>
                         </TouchableOpacity>
                     </View>
 
                     {/* Email Display */}
-                    <View className="bg-blue-50 p-4 rounded-xl mb-4 border border-blue-200">
-                        <Text className="text-xs text-slate-500 mb-1">Copied Email:</Text>
-                        <Text className="text-base font-semibold text-blue-600">
+                    <View
+                        className="bg-blue-50 dark:bg-slate-700 p-4 rounded-xl mb-4 border border-blue-200 dark:border-slate-600">
+                        <Text className="text-xs text-slate-500 dark:text-slate-400 mb-1">Copied Email:</Text>
+                        <Text className="text-base font-semibold text-blue-600 dark:text-blue-400">
                             {detection.email}
                         </Text>
                     </View>
@@ -117,12 +121,12 @@ export const ClipboardPrompt: React.FC<ClipboardPromptProps> = ({
                     {!showFullForm ? (
                         <>
                             {/* Quick Actions */}
-                            <Text className="text-sm text-slate-600 mb-3">
+                            <Text className="text-sm text-slate-600 dark:text-slate-300 mb-3">
                                 Save this email to WhichEmail?
                             </Text>
 
                             <TouchableOpacity
-                                className="bg-blue-500 p-4 rounded-xl mb-3 flex-row items-center justify-center gap-2"
+                                className="bg-blue-500 dark:bg-blue-600 p-4 rounded-xl mb-3 flex-row items-center justify-center gap-2"
                                 onPress={handleQuickSave}
                                 disabled={createService.isPending}
                             >
@@ -133,11 +137,12 @@ export const ClipboardPrompt: React.FC<ClipboardPromptProps> = ({
                             </TouchableOpacity>
 
                             <TouchableOpacity
-                                className="bg-slate-100 p-4 rounded-xl flex-row items-center justify-center gap-2"
+                                className="bg-slate-100 dark:bg-slate-700 p-4 rounded-xl flex-row items-center justify-center gap-2"
                                 onPress={() => setShowFullForm(true)}
                             >
-                                <Ionicons name="create-outline" size={20} color="#475569"/>
-                                <Text className="text-slate-700 font-semibold text-base">
+                                <Ionicons name="create-outline" size={20}
+                                          color={actualTheme === 'dark' ? '#cbd5e1' : '#475569'}/>
+                                <Text className="text-slate-700 dark:text-slate-300 font-semibold text-base">
                                     Add Service Name
                                 </Text>
                             </TouchableOpacity>
@@ -145,10 +150,11 @@ export const ClipboardPrompt: React.FC<ClipboardPromptProps> = ({
                     ) : (
                         <>
                             {/* Custom Form */}
-                            <Text className="text-sm text-slate-600 mb-2">Service Name:</Text>
+                            <Text className="text-sm text-slate-600 dark:text-slate-300 mb-2">Service Name:</Text>
                             <TextInput
-                                className="bg-slate-50 p-4 rounded-xl text-base mb-4 border border-slate-200"
+                                className="bg-slate-50 dark:bg-slate-700 p-4 rounded-xl text-base mb-4 border border-slate-200 dark:border-slate-600 text-slate-900 dark:text-slate-100"
                                 placeholder="e.g., Netflix, Gmail, Amazon"
+                                placeholderTextColor={actualTheme === 'dark' ? '#94a3b8' : '#64748b'}
                                 value={serviceName}
                                 onChangeText={setServiceName}
                                 autoFocus
@@ -158,13 +164,13 @@ export const ClipboardPrompt: React.FC<ClipboardPromptProps> = ({
 
                             <View className="flex-row gap-3">
                                 <TouchableOpacity
-                                    className="flex-1 bg-slate-100 p-4 rounded-xl"
+                                    className="flex-1 bg-slate-100 dark:bg-slate-700 p-4 rounded-xl"
                                     onPress={() => {
                                         setShowFullForm(false);
                                         setServiceName("");
                                     }}
                                 >
-                                    <Text className="text-slate-700 font-semibold text-center">
+                                    <Text className="text-slate-700 dark:text-slate-300 font-semibold text-center">
                                         Back
                                     </Text>
                                 </TouchableOpacity>
@@ -172,8 +178,8 @@ export const ClipboardPrompt: React.FC<ClipboardPromptProps> = ({
                                 <TouchableOpacity
                                     className={`flex-1 p-4 rounded-xl ${
                                         serviceName.trim()
-                                            ? "bg-blue-500"
-                                            : "bg-slate-300"
+                                            ? "bg-blue-500 dark:bg-blue-600"
+                                            : "bg-slate-300 dark:bg-slate-600"
                                     }`}
                                     onPress={handleCustomSave}
                                     disabled={!serviceName.trim() || createService.isPending}
@@ -188,12 +194,13 @@ export const ClipboardPrompt: React.FC<ClipboardPromptProps> = ({
 
                     {/* Dismiss Text */}
                     <TouchableOpacity className="mt-4" onPress={onDismiss}>
-                        <Text className="text-center text-sm text-slate-400">
+                        <Text className="text-center text-sm text-slate-400 dark:text-slate-500">
                             Not now
                         </Text>
                     </TouchableOpacity>
                 </View>
             </View>
         </Modal>
+
     );
 };

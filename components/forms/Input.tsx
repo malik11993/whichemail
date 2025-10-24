@@ -1,6 +1,7 @@
 import {Text, TextInput, TouchableOpacity, View} from 'react-native';
 import {Ionicons} from '@expo/vector-icons';
 import {useState} from 'react';
+import {useTheme} from "@/components/ThemeProvider";
 
 interface InputProps {
     label: string;
@@ -27,24 +28,30 @@ export default function Input({
                               }: InputProps) {
     const [isPasswordVisible, setIsPasswordVisible] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
+    const {actualTheme} = useTheme();
 
     return (
         <View className="mb-4">
-            <Text className="text-gray-700 font-semibold mb-2 text-base">{label}</Text>
+            <Text className="text-slate-700 dark:text-slate-300 font-semibold mb-2 text-base">
+                {label}
+            </Text>
             <View
-                className={`flex-row items-center bg-gray-50 rounded-xl px-4 border-2 ${
+                className={`flex-row items-center bg-slate-50 dark:bg-slate-800 rounded-xl px-4 border-2 ${
                     isFocused
-                        ? 'border-blue-500'
+                        ? 'border-blue-500 dark:border-blue-400'
                         : error
-                            ? 'border-red-500'
-                            : 'border-gray-200'
+                            ? 'border-red-500 dark:border-red-400'
+                            : 'border-slate-200 dark:border-slate-700'
                 }`}
             >
                 {icon && (
                     <Ionicons
                         name={icon}
                         size={20}
-                        color={isFocused ? '#3b82f6' : '#9ca3af'}
+                        color={isFocused
+                            ? '#3b82f6'
+                            : (actualTheme === 'dark' ? '#64748b' : '#9ca3af')
+                        }
                         style={{marginRight: 10}}
                     />
                 )}
@@ -52,13 +59,13 @@ export default function Input({
                     value={value}
                     onChangeText={onChangeText}
                     placeholder={placeholder}
-                    placeholderTextColor="#9ca3af"
+                    placeholderTextColor={actualTheme === 'dark' ? '#64748b' : '#9ca3af'}
                     secureTextEntry={secureTextEntry && !isPasswordVisible}
                     keyboardType={keyboardType}
                     autoCapitalize={autoCapitalize}
                     onFocus={() => setIsFocused(true)}
                     onBlur={() => setIsFocused(false)}
-                    className="flex-1 py-4 text-gray-900 text-base"
+                    className="flex-1 py-4 text-slate-900 dark:text-slate-100 text-base"
                 />
                 {secureTextEntry && (
                     <TouchableOpacity
@@ -67,7 +74,7 @@ export default function Input({
                         <Ionicons
                             name={isPasswordVisible ? 'eye-off' : 'eye'}
                             size={20}
-                            color="#9ca3af"
+                            color={actualTheme === 'dark' ? '#64748b' : '#9ca3af'}
                         />
                     </TouchableOpacity>
                 )}
@@ -75,7 +82,7 @@ export default function Input({
             {error && (
                 <View className="flex-row items-center mt-2">
                     <Ionicons name="alert-circle" size={16} color="#ef4444"/>
-                    <Text className="text-red-500 text-sm ml-1">{error}</Text>
+                    <Text className="text-red-500 dark:text-red-400 text-sm ml-1">{error}</Text>
                 </View>
             )}
         </View>
